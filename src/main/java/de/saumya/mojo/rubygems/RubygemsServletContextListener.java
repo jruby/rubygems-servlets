@@ -62,9 +62,9 @@ public class RubygemsServletContextListener implements ServletContextListener {
                 value = sce.getServletContext().getInitParameter( iKey );
                 if (value == null){
                     throw new RuntimeException("could not find directory location for storage:\n" +
-                    		"\tsystem property       : " + pKey + "\n" +
-                            "\tenvironment variable  : " + key + "\n" +
-                            "\tcontext init parameter: " + iKey + "\n");
+					       "\tsystem property       : " + pKey + "\n" +
+					       "\tenvironment variable  : " + key + "\n" +
+					       "\tcontext init parameter: " + iKey + "\n");
                 }
             }
         }
