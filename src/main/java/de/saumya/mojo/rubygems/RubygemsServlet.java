@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.sonatype.nexus.ruby.FileType;
 import org.sonatype.nexus.ruby.IOUtil;
 import org.sonatype.nexus.ruby.RubygemsFile;
 import org.sonatype.nexus.ruby.cuba.RubygemsFileSystem;
@@ -32,6 +33,7 @@ public class RubygemsServlet extends HttpServlet
     protected void handle( HttpServletRequest req, HttpServletResponse resp, RubygemsFile file ) 
             throws IOException, ServletException
     {
+        log( getPathInfo( req ) );
         switch( file.state() )
         {
         case FORBIDDEN:
@@ -66,30 +68,49 @@ public class RubygemsServlet extends HttpServlet
             throw new ServletException( "BUG: should never reach here" );
         }
     }
-    
+
+    private String getPathInfo( HttpServletRequest req )
+    {
+        String path = req.getPathInfo();
+        if ( path == null )
+        {
+            return "";
+        }
+        else
+        {
+            return path;
+        }
+    }
     @Override
     protected void doGet( HttpServletRequest req, HttpServletResponse resp )
             throws ServletException, IOException
     {
-        log( req.getPathInfo() );
-        handle( req, resp, 
-                fileSystem.get( req.getPathInfo(), req.getQueryString() ) );
+        RubygemsFile file = fileSystem.get( getPathInfo( req ), req.getQueryString() );
+        if ( file.type() == FileType.API_V1 && "api_key".equals( file.name() ) ) 
+        {
+            log( getPathInfo( req ) );
+            resp.getOutputStream().print( "behappy" );
+            resp.setContentLength( 7 );
+            resp.setContentType( "text/plain" );
+        }
+        else
+        {
+            handle( req, resp, file );
+        }
     }
 
     @Override
     protected void doPost( HttpServletRequest req, HttpServletResponse resp )
             throws ServletException, IOException
     {
-        handle( req, resp, 
-                fileSystem.post( req.getInputStream(), req.getPathInfo() ) );
+        handle( req, resp, fileSystem.post( req.getInputStream(), getPathInfo( req ) ) );
     }
 
     @Override
     protected void doDelete( HttpServletRequest req, HttpServletResponse resp )
             throws ServletException, IOException
     {
-        handle( req, resp, 
-                fileSystem.delete( req.getPathInfo() ) );
+        handle( req, resp, fileSystem.delete( getPathInfo( req ) ) );
     }
     
 }

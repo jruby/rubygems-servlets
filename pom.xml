@@ -58,6 +58,10 @@
               <value>${project.build.directory}/storage</value>
             </systemProperty>
             <systemProperty>
+              <name>gem.hosted.storage</name>
+              <value>${project.build.directory}/hosted</value>
+            </systemProperty>
+            <systemProperty>
               <name>jetty.port</name>
               <value>8989</value>
             </systemProperty>

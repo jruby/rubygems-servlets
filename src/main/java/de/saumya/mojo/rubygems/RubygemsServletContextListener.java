@@ -2,21 +2,67 @@ package de.saumya.mojo.rubygems;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
+import org.sonatype.nexus.ruby.ApiV1File;
+import org.sonatype.nexus.ruby.DefaultLayout;
 import org.sonatype.nexus.ruby.DefaultRubygemsGateway;
+import org.sonatype.nexus.ruby.RubygemsFile;
 import org.sonatype.nexus.ruby.RubygemsGateway;
+import org.sonatype.nexus.ruby.cuba.DefaultRubygemsFileSystem;
 import org.sonatype.nexus.ruby.cuba.RubygemsFileSystem;
 import org.sonatype.nexus.ruby.layout.CachingStorage;
-import org.sonatype.nexus.ruby.layout.HostedRubygemsFileSystem;
+import org.sonatype.nexus.ruby.layout.HostedDELETELayout;
+import org.sonatype.nexus.ruby.layout.HostedGETLayout;
+import org.sonatype.nexus.ruby.layout.HostedPOSTLayout;
 import org.sonatype.nexus.ruby.layout.ProxiedRubygemsFileSystem;
 import org.sonatype.nexus.ruby.layout.SimpleStorage;
 import org.sonatype.nexus.ruby.layout.Storage;
 
 public class RubygemsServletContextListener implements ServletContextListener {
+    
+    public static class HostedRubygemsFileSystem extends DefaultRubygemsFileSystem
+    {
+        public HostedRubygemsFileSystem( RubygemsGateway gateway,
+                                         Storage store )
+        {
+            super( new DefaultLayout(),
+                   new HostedGETLayout( gateway, store ),
+                   new HostedPOSTLayout( gateway, store ) {
+                        
+                        // monkey patch upstream
+                
+                        @Override
+                        public ApiV1File apiV1File( String name )
+                        {
+                            ApiV1File apiV1 = super.apiV1File( name );
+                            if ( "api_key".equals( apiV1.name() ) )
+                            {
+                                apiV1.markAsForbidden();
+                            }
+                            else
+                            {
+                                apiV1.resetState();
+                                apiV1.set( null );
+                            }
+                            return apiV1;
+                        }
+
+                        @Override
+                        public void addGem( InputStream is, RubygemsFile file )
+                        {
+                            super.addGem( is, file );
+                            // TODO in store.getInputStream the state get reset, instead it reset the state
+                            file.set( is );
+                        }
+                   },
+                   new HostedDELETELayout( gateway, store ) );
+        } 
+    }
 
     public void contextDestroyed( ServletContextEvent sce ) {
     }
@@ -31,7 +77,8 @@ public class RubygemsServletContextListener implements ServletContextListener {
             {
                 File hostedStorage = new File( getStorage( "GEM_HOSTED_STORAGE", sce ) );
                 register( sce, "proxy", new ProxiedRubygemsFileSystem( gateway, caching ) );
-                register( sce, "hosted", new HostedRubygemsFileSystem( gateway, new SimpleStorage( hostedStorage ) ) );
+                register( sce, "hosted", new HostedRubygemsFileSystem( gateway,
+                                                                       new SimpleStorage( hostedStorage ) ) );
             }
             catch( RuntimeException e )// no hosted configured
             {
@@ -68,6 +115,7 @@ public class RubygemsServletContextListener implements ServletContextListener {
                 }
             }
         }
+        sce.getServletContext().log( key + " resolved to " + value ); 
         return value;
     }
 
