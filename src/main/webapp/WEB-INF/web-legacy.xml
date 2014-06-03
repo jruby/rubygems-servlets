@@ -13,7 +13,7 @@
   </listener>
   <servlet>
     <servlet-name>gems</servlet-name>
-    <servlet-class>de.saumya.mojo.rubygems.RubygemsServlet</servlet-class>
+    <servlet-class>de.saumya.mojo.rubygems.LegacyRubygemsServlet</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>default</servlet-name>
