@@ -21,8 +21,9 @@
     </dependency>
   </dependencies>
   <properties>
-    <path>proxy/maven/</path>
+    <path>caching/maven/</path>
     <web.xml>web.xml</web.xml>
+    <proxy.storage></proxy.storage>
   </properties>
   <build>
     <finalName>rubygems</finalName>
@@ -55,7 +56,19 @@
           <systemProperties>
             <systemProperty>
               <name>gem.proxy.storage</name>
-              <value>${project.build.directory}/storage</value>
+              <value>${proxy.storage}</value>
+            </systemProperty>
+            <systemProperty>
+              <name>gem.caching.proxy.storage</name>
+              <value>${project.build.directory}/caching</value>
+            </systemProperty>
+            <systemProperty>
+              <name>gem.hosted.storage</name>
+              <value>${project.build.directory}/hosted</value>
+            </systemProperty>
+            <systemProperty>
+              <name>gem.merged</name>
+              <value>true</value>
             </systemProperty>
             <systemProperty>
               <name>jetty.port</name>
@@ -69,9 +82,16 @@
   </build>
   <profiles>
     <profile>
+      <id>merged</id>
+      <properties>
+	<path>merged/maven/</path>
+      </properties>
+    </profile>
+    <profile>
       <id>legacy</id>
       <properties>
 	<path></path>
+	<proxy.storage>${project.build.directory}/storage</proxy.storage>
 	<web.xml>web-legacy.xml</web.xml>
       </properties>
     </profile>

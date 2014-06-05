@@ -4,32 +4,68 @@
 
 <web-app>
   <display-name>rubygems servlets</display-name>
+
   <context-param>
-    <param-name>gem-proxy-storage</param-name>
-    <param-value>/var/cache/rubygems/proxy</param-value> 
+    <param-name>gem-merged</param-name>
+    <param-value>true</param-value> 
   </context-param>
   <context-param>
     <param-name>gem-hosted-storage</param-name>
     <param-value>/var/cache/rubygems/hosted</param-value> 
   </context-param>
+  <context-param>
+    <param-name>gem-caching-proxy-storage</param-name>
+    <param-value>/var/cache/rubygems/cachingproxy</param-value> 
+  </context-param>
+  <context-param>
+    <param-name>gem-caching-proxy-url</param-name>
+    <param-value>https://rubygems.org</param-value> 
+  </context-param>
+  <context-param>
+    <param-name>gem-proxy-storage</param-name>
+    <!-- empty value means turned off -->
+    <param-value></param-value> 
+  </context-param>
+  <context-param>
+    <param-name>gem-proxy-url</param-name>
+    <param-value>https://rubygems.org</param-value> 
+  </context-param>
+
   <listener>
     <listener-class>de.saumya.mojo.rubygems.RubygemsServletContextListener</listener-class>
   </listener>
+
   <servlet>
     <servlet-name>proxy</servlet-name>
+    <servlet-class>de.saumya.mojo.rubygems.RubygemsServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>caching</servlet-name>
     <servlet-class>de.saumya.mojo.rubygems.RubygemsServlet</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>hosted</servlet-name>
     <servlet-class>de.saumya.mojo.rubygems.RubygemsServlet</servlet-class>
   </servlet>
+  <servlet>
+    <servlet-name>merged</servlet-name>
+    <servlet-class>de.saumya.mojo.rubygems.RubygemsServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>caching</servlet-name>
+    <url-pattern>/caching/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>hosted</servlet-name>
+    <url-pattern>/hosted/*</url-pattern>
+  </servlet-mapping>
   <servlet-mapping>
     <servlet-name>proxy</servlet-name>
     <url-pattern>/proxy/*</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
-    <servlet-name>hosted</servlet-name>
-    <url-pattern>/hosted/*</url-pattern>
+    <servlet-name>merged</servlet-name>
+    <url-pattern>/merged/*</url-pattern>
   </servlet-mapping>
   <welcome-file-list>
     <welcome-file>index.html</welcome-file>

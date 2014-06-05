@@ -9,11 +9,19 @@ import javax.servlet.http.HttpServletResponse;
 import org.sonatype.nexus.ruby.FileType;
 import org.sonatype.nexus.ruby.GemArtifactFile;
 import org.sonatype.nexus.ruby.RubygemsFile;
+import org.sonatype.nexus.ruby.cuba.RubygemsFileSystem;
 
 public class LegacyRubygemsServlet extends RubygemsServlet
 {
     private static final long serialVersionUID = 2441264980328145654L;
 
+    @Override
+    public void init() throws ServletException {
+        super.init();
+        
+        this.fileSystem = (RubygemsFileSystem) getServletContext().getAttribute( RubygemsFileSystem.class.getName() );
+    }
+    
     protected void handle( HttpServletRequest req, HttpServletResponse resp, RubygemsFile file ) 
             throws IOException, ServletException
     {

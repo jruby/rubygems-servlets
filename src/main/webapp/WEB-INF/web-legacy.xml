@@ -3,18 +3,22 @@
  "http://java.sun.com/dtd/web-app_2_3.dtd" >
 
 <web-app>
-  <display-name>rubygems servlets</display-name>
+  <display-name>rubygems legacy servlet</display-name>
+
   <context-param>
     <param-name>gem-proxy-storage</param-name>
     <param-value>/var/cache/rubygems/proxy</param-value> 
   </context-param>
+
   <listener>
-    <listener-class>de.saumya.mojo.rubygems.RubygemsServletContextListener</listener-class>
+    <listener-class>de.saumya.mojo.rubygems.LegacyRubygemsServletContextListener</listener-class>
   </listener>
+
   <servlet>
     <servlet-name>gems</servlet-name>
     <servlet-class>de.saumya.mojo.rubygems.LegacyRubygemsServlet</servlet-class>
   </servlet>
+
   <servlet-mapping>
     <servlet-name>default</servlet-name>
     <url-pattern>/releases</url-pattern>
@@ -39,10 +43,12 @@
     <servlet-name>default</servlet-name>
     <url-pattern>/prereleases/index.html</url-pattern>
   </servlet-mapping>
+<!-- tomcat does not like this
   <servlet-mapping>
     <servlet-name>default</servlet-name>
     <url-pattern></url-pattern>
   </servlet-mapping>
+-->
   <servlet-mapping>
     <servlet-name>default</servlet-name>
     <url-pattern>/</url-pattern>
@@ -55,6 +61,7 @@
     <servlet-name>gems</servlet-name>
     <url-pattern>/*</url-pattern>
   </servlet-mapping>
+
   <welcome-file-list>
     <welcome-file>index.html</welcome-file>
   </welcome-file-list>

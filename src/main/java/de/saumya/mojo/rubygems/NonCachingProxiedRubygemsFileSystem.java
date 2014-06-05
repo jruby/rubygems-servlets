@@ -11,18 +11,19 @@ import org.sonatype.nexus.ruby.RubygemsFile;
 import org.sonatype.nexus.ruby.RubygemsGateway;
 import org.sonatype.nexus.ruby.Sha1File;
 import org.sonatype.nexus.ruby.cuba.DefaultRubygemsFileSystem;
+import org.sonatype.nexus.ruby.layout.DELETELayout;
 import org.sonatype.nexus.ruby.layout.GETLayout;
 import org.sonatype.nexus.ruby.layout.Storage;
 
-public class LegacyRubygemsFileSystem extends DefaultRubygemsFileSystem
+public class NonCachingProxiedRubygemsFileSystem extends DefaultRubygemsFileSystem
 {
     
-    static class LegacyGETLayout extends GETLayout 
+    static class NonCachingGETLayout extends GETLayout 
     {
 
         private final DefaultLayout layout;
 
-        public LegacyGETLayout( RubygemsGateway gateway, Storage store, DefaultLayout layout )
+        public NonCachingGETLayout( RubygemsGateway gateway, Storage store, DefaultLayout layout )
         {
             super( gateway, store );
             // the raw layout without store interaction
@@ -99,35 +100,16 @@ public class LegacyRubygemsFileSystem extends DefaultRubygemsFileSystem
         
     }
     
-    public LegacyRubygemsFileSystem( RubygemsGateway gateway, Storage store )
+    public NonCachingProxiedRubygemsFileSystem( RubygemsGateway gateway, Storage store )
     {
         this( gateway, store, new DefaultLayout() );
     }
     
-    public LegacyRubygemsFileSystem( RubygemsGateway gateway, Storage store, DefaultLayout layout )
+    public NonCachingProxiedRubygemsFileSystem( RubygemsGateway gateway, Storage store, DefaultLayout layout )
     {
         super( layout,
-               new LegacyGETLayout( gateway, store, layout ),
+               new NonCachingGETLayout( gateway, store, layout ),
                null, // no POST allowed
-               null );// no DELETE allowed
+               new DELETELayout( gateway, store ) );
     }
-
-    @Override
-    public RubygemsFile get( String original, String query )
-    {
-        return super.get( "/maven" + original, query );
-    }
-
-    @Override
-    public RubygemsFile post( InputStream is, String path )
-    {
-        throw new RuntimeException( "not supported" );
-    }
-
-    @Override
-    public RubygemsFile delete( String original )
-    {
-        throw new RuntimeException( "not supported" );
-    }
-
 }

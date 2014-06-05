@@ -17,17 +17,13 @@ public class RubygemsServlet extends HttpServlet
 {
     private static final long serialVersionUID = -6942659125767757561L;
 
-    private RubygemsFileSystem fileSystem;
+    RubygemsFileSystem fileSystem;
 
     @Override
     public void init() throws ServletException {
         super.init();
         
         this.fileSystem = (RubygemsFileSystem) getServletContext().getAttribute( getServletConfig().getServletName() );
-        if ( fileSystem == null )
-        {
-            this.fileSystem = (RubygemsFileSystem) getServletContext().getAttribute(RubygemsFileSystem.class.getName());
-        }
     }
 
     protected void handle( HttpServletRequest req, HttpServletResponse resp, RubygemsFile file ) 
@@ -81,6 +77,22 @@ public class RubygemsServlet extends HttpServlet
             return path;
         }
     }
+
+    
+    @Override
+    protected void service( HttpServletRequest req, HttpServletResponse resp )
+            throws ServletException, IOException
+    {
+        if ( fileSystem == null )
+        {
+            resp.sendError( HttpServletResponse.SC_SERVICE_UNAVAILABLE, "not configured to server requests" );
+        }
+        else
+        {
+            super.service( req, resp );
+        }
+    }
+
     @Override
     protected void doGet( HttpServletRequest req, HttpServletResponse resp )
             throws ServletException, IOException
