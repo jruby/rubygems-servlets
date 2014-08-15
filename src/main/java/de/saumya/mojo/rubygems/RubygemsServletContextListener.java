@@ -10,6 +10,7 @@ import org.sonatype.nexus.ruby.cuba.DefaultRubygemsFileSystem;
 import org.sonatype.nexus.ruby.layout.CachingStorage;
 import org.sonatype.nexus.ruby.layout.GETLayout;
 import org.sonatype.nexus.ruby.layout.ProxiedRubygemsFileSystem;
+import org.sonatype.nexus.ruby.layout.ProxyStorage;
 import org.sonatype.nexus.ruby.layout.SimpleStorage;
 import org.sonatype.nexus.ruby.layout.Storage;
 
@@ -29,7 +30,7 @@ public class RubygemsServletContextListener extends AbstractRubygemsServletConte
         file = configor.getFile( "GEM_CACHING_PROXY_STORAGE" );
         if ( file != null )
         {
-            Storage storage = new CachingStorage( file, configor.getURL( "GEM_CACHING_PROXY_URL" ) );
+            ProxyStorage storage = new CachingStorage( file, configor.getURL( "GEM_CACHING_PROXY_URL" ) );
             configor.register( "caching", storage, new ProxiedRubygemsFileSystem( gateway, storage ) );
         }
         

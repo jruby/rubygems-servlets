@@ -1,7 +1,6 @@
 package de.saumya.mojo.rubygems;
 
 import java.io.IOException;
-import java.io.InputStream;
 
 import org.sonatype.nexus.ruby.DefaultLayout;
 import org.sonatype.nexus.ruby.FileType;
