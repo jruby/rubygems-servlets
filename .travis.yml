@@ -6,3 +6,4 @@ env:
     - PROFILE=default
     - PROFILE=merged
     - PROFILE=proxy
+    - PROFILE=legacy
