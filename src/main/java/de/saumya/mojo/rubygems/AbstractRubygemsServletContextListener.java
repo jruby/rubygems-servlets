@@ -111,7 +111,7 @@ public abstract class AbstractRubygemsServletContextListener implements ServletC
             return new URL( url );
         }
 
-        protected void register( String key, Storage storage, RubygemsFileSystem rubygems )
+        protected void addStorageAndRegister( String key, Storage storage, RubygemsFileSystem rubygems )
         {
             this.storages.add( storage );
             register( key, rubygems );
