@@ -8,7 +8,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.sonatype.nexus.ruby.Directory;
 import org.sonatype.nexus.ruby.FileType;
+import org.sonatype.nexus.ruby.GemArtifactFile;
 import org.sonatype.nexus.ruby.IOUtil;
 import org.sonatype.nexus.ruby.RubygemsFile;
 import org.sonatype.nexus.ruby.cuba.RubygemsFileSystem;
@@ -29,7 +31,7 @@ public class RubygemsServlet extends HttpServlet
     protected void handle( HttpServletRequest req, HttpServletResponse resp, RubygemsFile file ) 
             throws IOException, ServletException
     {
-        log( getPathInfo( req ) );
+        log( getPathInfo( req ) + " - " + file ); 
         switch( file.state() )
         {
         case FORBIDDEN:
@@ -39,6 +41,11 @@ public class RubygemsServlet extends HttpServlet
             resp.sendError( HttpServletResponse.SC_NOT_FOUND );            
             break;
         case NO_PAYLOAD:
+            if ( file.type() == FileType.DIRECTORY )
+            {
+                writeOutDirectory( resp, (Directory) file );
+                break;
+            }
             resp.sendError( HttpServletResponse.SC_NOT_FOUND, 
                             req.getRequestURI() + " has no view - not implemented" );          
             break;
@@ -65,6 +72,14 @@ public class RubygemsServlet extends HttpServlet
         }
     }
 
+    private void writeOutDirectory( HttpServletResponse resp, Directory file ) throws IOException
+    {
+        HtmlDirectoryBuilder html = new HtmlDirectoryBuilder( getServletConfig().getServletName(), file );
+        resp.setContentType( "text/html" );
+        resp.setCharacterEncoding( "utf-8" );
+        resp.getWriter().print( html.toHTML() );
+    }
+
     private String getPathInfo( HttpServletRequest req )
     {
         String path = req.getPathInfo();
@@ -85,7 +100,7 @@ public class RubygemsServlet extends HttpServlet
     {
         if ( fileSystem == null )
         {
-            resp.sendError( HttpServletResponse.SC_SERVICE_UNAVAILABLE, "not configured to server requests" );
+            resp.sendError( HttpServletResponse.SC_SERVICE_UNAVAILABLE, "not configured to server requests - maybe wrong base-URL !?" );
         }
         else
         {

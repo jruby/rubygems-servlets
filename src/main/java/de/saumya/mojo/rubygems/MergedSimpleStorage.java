@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.sonatype.nexus.ruby.DependencyFile;
+import org.sonatype.nexus.ruby.Directory;
 import org.sonatype.nexus.ruby.IOUtil;
 import org.sonatype.nexus.ruby.RubygemsFile;
 import org.sonatype.nexus.ruby.RubygemsGateway;
@@ -25,6 +26,34 @@ public class MergedSimpleStorage extends SimpleStorage
         super( null ); // can not create/retrieve/update/delete files
         this.gateway = gateway;
         this.storages = storages;
+    }
+
+    @Override
+    public InputStream getInputStream( RubygemsFile file ) throws IOException
+    {
+        if ( file.hasException() )
+        {
+            throw new IOException( file.getException() );
+        }
+        if ( file.get() == null ) {
+            for( Storage s : storages )
+            {
+                s.retrieve( file );
+                if ( file.exists() )
+                {
+                    return s.getInputStream( file );
+                }
+                file.resetState();
+            }
+        }
+        return (InputStream) file.get();
+    }
+
+    @Override
+    public String[] listDirectory( Directory dir )
+    {
+        // TODO 
+        return new String[ 0 ];
     }
 
     @Override
