@@ -81,7 +81,7 @@ public class NonCachingProxiedRubygemsFileSystem extends DefaultRubygemsFileSyst
             // the difference to super is NOT to retrieve the gem !
             try
             {   
-                GemFile gem = file.gem( newDependencies( file.dependency() ) );
+                GemFile gem = file.gem( newDependencyData( file.dependency() ) );
                 if ( gem == null )
                 {
                     file.markAsNotExists();
