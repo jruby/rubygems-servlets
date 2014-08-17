@@ -95,16 +95,18 @@
 	<web.xml>web-legacy.xml</web.xml>
       </properties>
       <!-- TODO remove the whole exclude after directory browsing works for legacy -->
-      <plugins>
-	<plugin>
-          <artifactId>maven-invoker-plugin</artifactId>
-          <configuration>
-            <pomExcludes>
-              <pomExclude>directory-browsing/pom.xml</pomExclude>
-	    </pomExcludes>	    
-	  </configuration>
-	</plugin>
-      </plugins>       
+      <build>
+	<plugins>
+	  <plugin>
+            <artifactId>maven-invoker-plugin</artifactId>
+            <configuration>
+              <pomExcludes>
+		<pomExclude>directory-browsing/pom.xml</pomExclude>
+	      </pomExcludes>	    
+	    </configuration>
+	  </plugin>
+	</plugins>
+      </build>
     </profile>
     <profile>
       <id>run-its</id>
