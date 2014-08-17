@@ -1,6 +1,8 @@
 rubygems-servlets
 =================
 
+[![Build Status](https://secure.travis-ci.org/torquebox/rubygems-servlets.png)](http://travis-ci.org/torquebox/rubygems-servlets)
+
 webapp which hosts rubygems or a proxy to rubygems. delivers gem maven artifacts as well. the proxy can be configured to be caching proxy or non-caching proxy
 
 build
@@ -55,7 +57,16 @@ as mirror to <http://rubygems-proxy.torquebox.org/releases> and <http://rubygems
 
 for more details about Gem-Artifacts see <https://github.com/sonatype/nexus-ruby-support/wiki/Gem-Artifacts>. for a solution with access control, more advanced proxy features and merging (group) to repositories see <https://github.com/sonatype/nexus-ruby-support>.
 
-rubygems-proxy.torquebox.org
+non-caching proxy
+---
+
+this proxy configuration does not cache the gem-files it self but send a redirect to <rubygems.org>. all other files are cached the same way as the caching proxy:
+
+    mvn jetty:run -P proxy
+
+with url <http://localhost:8989/proxy>
+
+rubygems-proxy.torquebox.org (not yet installed)
 --
 
 the webapp for this rubygems-proxy is under the profile **legacy**
@@ -77,3 +88,16 @@ some integration tests for proxy feature can be executed with
 	
     mvn -P run-its -Plegacy
 
+contributing
+------------
+
+1. Fork it
+2. Create your feature branch (`git checkout -b my-new-feature`)
+3. Commit your changes (`git commit -am 'Added some feature'`)
+4. Push to the branch (`git push origin my-new-feature`)
+5. Create new Pull Request
+
+meta-fu
+-------
+
+enjoy :) 
