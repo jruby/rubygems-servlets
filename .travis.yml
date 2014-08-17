@@ -4,3 +4,5 @@ script: mvn verify -P run-its -P $PROFILE
 env:
   matrix:
     - PROFILE=default
+    - PROFILE=merged
+    - PROFILE=legacy
