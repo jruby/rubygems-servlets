@@ -1,12 +1,12 @@
 rubygems-servlets
 =================
 
-webapp which hosts rubygems or a proxy to rubygems. delivers gem maven artifacts as well
+webapp which hosts rubygems or a proxy to rubygems. delivers gem maven artifacts as well. the proxy can be configured to be caching proxy or non-caching proxy
 
 build
 --
 
-the regular webapp with hosted and proxy can be built with
+the regular webapp with hosted and (caching-)proxy can be built with
 
      mvn package
 
@@ -22,19 +22,19 @@ usage
 add them to your gem command
 
 * ```gem sources add <http://localhost:8989/hosted>```
-* ```gem sources add <http://localhost:8989/proxy>```
+* ```gem sources add <http://localhost:8989/caching>```
 
-or use the proxy with bundler
+or use the (caching-)proxy with bundler
 
-* ```bundler config mirror.http://rubygems.org http://localhost:8989/proxy```
-* ```bundler config mirror.https://rubygems.org http://localhost:8989/proxy```
+* ```bundler config mirror.http://rubygems.org http://localhost:8989/caching```
+* ```bundler config mirror.https://rubygems.org http://localhost:8989/caching```
 
-the Gem-Artifacts are non accessible via
+the Gem-Artifacts are accessible via
 
 *  <http://localhost:8989/hosted/maven/releases>
 *  <http://localhost:8989/hosted/maven/prereleases>
-*  <http://localhost:8989/proxy/maven/releases>
-*  <http://localhost:8989/proxy/maven/prereleases>
+*  <http://localhost:8989/caching/maven/releases>
+*  <http://localhost:8989/caching/maven/prereleases>
 
 as mirror to <http://rubygems-proxy.torquebox.org/releases> and <http://rubygems-proxy.torquebox.org/prereleases> add to your settings.xml
 
@@ -43,13 +43,13 @@ as mirror to <http://rubygems-proxy.torquebox.org/releases> and <http://rubygems
         <mirror>
           <id>gems</id>
           <name>Rubygems</name>
-          <url>http://localhost:8989/proxy/maven/releases</url>
+          <url>http://localhost:8989/caching/maven/releases</url>
           <mirrorOf>rubygems-releases</mirrorOf>
         </mirror>
         <mirror>
           <id>pregems</id>
           <name>Rubygems Prereleases</name>
-          <url>http://localhost:8989/proxy/maven/prereleases</url>
+          <url>http://localhost:8989/caching/maven/prereleases</url>
           <mirrorOf>rubygems-prereleases</mirrorOf>
         </mirror>
 
