@@ -1,6 +1,6 @@
 language: java
 install:  /bin/true
-script: mvn -P $PROFILE
+script: mvn verify -P $PROFILE
 env:
   matrix:
     - PROFILE=default
