@@ -23,22 +23,22 @@ public class RubygemsServletContextListener extends AbstractRubygemsServletConte
         File file = configor.getFile( "GEM_PROXY_STORAGE" );
         if ( file != null )
         {
-            Storage storage = new CachingStorage( file, configor.getURL( "GEM_PROXY_URL" ) );
-            configor.register( "proxy", storage, new NonCachingProxiedRubygemsFileSystem( gateway, storage ) );
+            ProxyStorage storage = new CachingStorage( file, configor.getURL( "GEM_PROXY_URL" ) );
+            configor.addStorageAndRegister( "proxy", storage, new NonCachingProxiedRubygemsFileSystem( gateway, storage ) );
         }
         
         file = configor.getFile( "GEM_CACHING_PROXY_STORAGE" );
         if ( file != null )
         {
             ProxyStorage storage = new CachingStorage( file, configor.getURL( "GEM_CACHING_PROXY_URL" ) );
-            configor.register( "caching", storage, new ProxiedRubygemsFileSystem( gateway, storage ) );
+            configor.addStorageAndRegister( "caching", storage, new ProxiedRubygemsFileSystem( gateway, storage ) );
         }
         
         file = new File( configor.getConfigValue( "GEM_HOSTED_STORAGE" ) );
         if ( file != null )
         {
             Storage storage =  new SimpleStorage( file );
-            configor.register( "hosted", storage, new HostedRubygemsFileSystem( gateway, storage ) );
+            configor.addStorageAndRegister( "hosted", storage, new HostedRubygemsFileSystem( gateway, storage ) );
         }
         
         if ( "true".equals( configor.getConfigValue( "GEM_MERGED" ) ) )

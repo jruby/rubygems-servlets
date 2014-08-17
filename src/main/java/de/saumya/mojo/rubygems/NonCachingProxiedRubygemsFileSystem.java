@@ -11,22 +11,25 @@ import org.sonatype.nexus.ruby.RubygemsGateway;
 import org.sonatype.nexus.ruby.Sha1File;
 import org.sonatype.nexus.ruby.cuba.DefaultRubygemsFileSystem;
 import org.sonatype.nexus.ruby.layout.DELETELayout;
-import org.sonatype.nexus.ruby.layout.GETLayout;
-import org.sonatype.nexus.ruby.layout.Storage;
+import org.sonatype.nexus.ruby.layout.ProxiedGETLayout;
+import org.sonatype.nexus.ruby.layout.ProxyStorage;
 
 public class NonCachingProxiedRubygemsFileSystem extends DefaultRubygemsFileSystem
 {
     
-    static class NonCachingGETLayout extends GETLayout 
+    static class NonCachingGETLayout extends ProxiedGETLayout 
     {
 
         private final DefaultLayout layout;
+        private final ProxyStorage store;
 
-        public NonCachingGETLayout( RubygemsGateway gateway, Storage store, DefaultLayout layout )
+        public NonCachingGETLayout( RubygemsGateway gateway, ProxyStorage store, DefaultLayout layout )
         {
             super( gateway, store );
             // the raw layout without store interaction
             this.layout = layout;
+            // need to access it from here
+            this.store = store;
         }
 
         @Override
@@ -99,12 +102,12 @@ public class NonCachingProxiedRubygemsFileSystem extends DefaultRubygemsFileSyst
         
     }
     
-    public NonCachingProxiedRubygemsFileSystem( RubygemsGateway gateway, Storage store )
+    public NonCachingProxiedRubygemsFileSystem( RubygemsGateway gateway, ProxyStorage store )
     {
         this( gateway, store, new DefaultLayout() );
     }
     
-    public NonCachingProxiedRubygemsFileSystem( RubygemsGateway gateway, Storage store, DefaultLayout layout )
+    public NonCachingProxiedRubygemsFileSystem( RubygemsGateway gateway, ProxyStorage store, DefaultLayout layout )
     {
         super( layout,
                new NonCachingGETLayout( gateway, store, layout ),

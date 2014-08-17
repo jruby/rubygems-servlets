@@ -41,13 +41,23 @@ public class RubygemsServlet extends HttpServlet
             resp.sendError( HttpServletResponse.SC_NOT_FOUND );            
             break;
         case NO_PAYLOAD:
-            if ( file.type() == FileType.DIRECTORY )
+            switch( file.type() )
             {
+            case DIRECTORY:
                 writeOutDirectory( resp, (Directory) file );
                 break;
+            case GEM_ARTIFACT:
+                // we can pass in null as dependenciesData since we have already the gem
+                resp.sendRedirect( "https://rubygems.org/gems/" + ((GemArtifactFile) file ).gem( null ).filename() + ".gem" );
+                return;
+            case GEM:
+//            case GEMSPEC:
+                resp.sendRedirect( "https://rubygems.org/" + file.remotePath() );
+                return;
+            default:
+                resp.sendError( HttpServletResponse.SC_NOT_FOUND, 
+                                req.getRequestURI() + " has no view - not implemented" );          
             }
-            resp.sendError( HttpServletResponse.SC_NOT_FOUND, 
-                            req.getRequestURI() + " has no view - not implemented" );          
             break;
         case ERROR:
             throw new ServletException( file.getException() );

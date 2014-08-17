@@ -77,7 +77,6 @@
           </systemProperties>
         </configuration>
       </plugin>
-
     </plugins>
   </build>
   <profiles>
@@ -88,10 +87,17 @@
       </properties>
     </profile>
     <profile>
+      <id>proxy</id>
+      <properties>
+	<path>proxy/maven/</path>
+	<proxy.storage>${project.build.directory}/proxy</proxy.storage>
+      </properties>
+    </profile>
+    <profile>
       <id>legacy</id>
       <properties>
 	<path></path>
-	<proxy.storage>${project.build.directory}/storage</proxy.storage>
+	<proxy.storage>${project.build.directory}/legacy</proxy.storage>
 	<web.xml>web-legacy.xml</web.xml>
       </properties>
       <!-- TODO remove the whole exclude after directory browsing works for legacy -->

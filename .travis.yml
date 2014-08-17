@@ -5,4 +5,4 @@ env:
   matrix:
     - PROFILE=default
     - PROFILE=merged
-    - PROFILE=legacy
+    - PROFILE=proxy

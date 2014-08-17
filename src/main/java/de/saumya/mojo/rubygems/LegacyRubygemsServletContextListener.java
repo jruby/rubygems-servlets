@@ -8,9 +8,11 @@ import java.net.URL;
 import org.sonatype.nexus.ruby.DefaultRubygemsGateway;
 import org.sonatype.nexus.ruby.RubygemsFile;
 import org.sonatype.nexus.ruby.RubygemsGateway;
+import org.sonatype.nexus.ruby.cuba.DefaultRubygemsFileSystem;
 import org.sonatype.nexus.ruby.cuba.RubygemsFileSystem;
 import org.sonatype.nexus.ruby.layout.CachingStorage;
-import org.sonatype.nexus.ruby.layout.Storage;
+import org.sonatype.nexus.ruby.layout.ProxiedRubygemsFileSystem;
+import org.sonatype.nexus.ruby.layout.ProxyStorage;
 
 public class LegacyRubygemsServletContextListener extends AbstractRubygemsServletContextListener
 {
@@ -18,7 +20,7 @@ public class LegacyRubygemsServletContextListener extends AbstractRubygemsServle
     static class LegacyRubygemsFileSystem extends NonCachingProxiedRubygemsFileSystem
     {
 
-        public LegacyRubygemsFileSystem( RubygemsGateway gateway, Storage store )
+        public LegacyRubygemsFileSystem( RubygemsGateway gateway, ProxyStorage store )
         {
             super( gateway, store );
         }
@@ -50,8 +52,8 @@ public class LegacyRubygemsServletContextListener extends AbstractRubygemsServle
         {
             throw new RuntimeException( "no storage path given");
         }
-        Storage storage = new CachingStorage( path, new URL( "https://rubygems.org" ) );
-        RubygemsFileSystem rubygems = new LegacyRubygemsFileSystem( gateway, storage );
+        ProxyStorage storage = new CachingStorage( path, new URL( "https://rubygems.org" ) );
+        RubygemsFileSystem rubygems = new ProxiedRubygemsFileSystem( gateway, storage );
         configor.register( RubygemsFileSystem.class.getName(), rubygems );
     }
 
