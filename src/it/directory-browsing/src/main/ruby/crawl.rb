@@ -14,5 +14,6 @@ class Crawl
     File.open(target_file, 'w') do |f|
       f.print Net::HTTP.get(URI.parse("#{base_url}/#{path}"))
     end
+    FileUtils.rm(target_file) if File.size(target_file) == 0
   end
 end

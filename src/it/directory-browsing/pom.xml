@@ -28,9 +28,11 @@
 		c.target = "${project.build.directory}/crawl"
 		c.base_url = "http://localhost:8989/@path@releases/rubygems"
 
+		c.load("rails")
 		c.load("rails/")
 		c.load("rails/maven-metadata.xml")
 		c.load("rails/maven-metadata.xml.sha1")
+		c.load("rails/3.0.9")
 		c.load("rails/3.0.9/")
 		c.load("rails/3.0.9/rails-3.0.9.gem.sha1")
 		c.load("rails/3.0.9/rails-3.0.9.pom")

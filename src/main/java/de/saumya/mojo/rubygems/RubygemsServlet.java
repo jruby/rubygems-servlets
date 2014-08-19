@@ -44,6 +44,11 @@ public class RubygemsServlet extends HttpServlet
             switch( file.type() )
             {
             case DIRECTORY:
+                if (!req.getPathInfo().endsWith( "/" ))
+                {
+                    resp.sendRedirect( req.getRequestURI() + "/" );
+                    return;
+                }
                 writeOutDirectory( resp, (Directory) file );
                 break;
             case GEM_ARTIFACT:
