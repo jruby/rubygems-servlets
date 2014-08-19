@@ -24,21 +24,23 @@ public class RubygemsServlet extends HttpServlet
     @Override
     public void init() throws ServletException {
         super.init();
-        
+
         this.fileSystem = (RubygemsFileSystem) getServletContext().getAttribute( getServletConfig().getServletName() );
     }
 
-    protected void handle( HttpServletRequest req, HttpServletResponse resp, RubygemsFile file ) 
+    protected void handle( HttpServletRequest req, HttpServletResponse resp, RubygemsFile file )
             throws IOException, ServletException
     {
-        log( getPathInfo( req ) + " - " + file ); 
+        log( getPathInfo( req ) + " - " + file );
+        String proxyUrl = getServletContext().getInitParameter("gem-proxy-url");
+
         switch( file.state() )
         {
         case FORBIDDEN:
             resp.sendError( HttpServletResponse.SC_FORBIDDEN );
             break;
         case NOT_EXISTS:
-            resp.sendError( HttpServletResponse.SC_NOT_FOUND );            
+            resp.sendError( HttpServletResponse.SC_NOT_FOUND );
             break;
         case NO_PAYLOAD:
             switch( file.type() )
@@ -48,22 +50,22 @@ public class RubygemsServlet extends HttpServlet
                 break;
             case GEM_ARTIFACT:
                 // we can pass in null as dependenciesData since we have already the gem
-                resp.sendRedirect( "https://rubygems.org/gems/" + ((GemArtifactFile) file ).gem( null ).filename() + ".gem" );
+                resp.sendRedirect( proxyUrl + "/gems/" + ((GemArtifactFile) file ).gem( null ).filename() + ".gem" );
                 return;
             case GEM:
 //            case GEMSPEC:
                 resp.sendRedirect( "https://rubygems.org/" + file.remotePath() );
                 return;
             default:
-                resp.sendError( HttpServletResponse.SC_NOT_FOUND, 
-                                req.getRequestURI() + " has no view - not implemented" );          
+                resp.sendError( HttpServletResponse.SC_NOT_FOUND,
+                                req.getRequestURI() + " has no view - not implemented" );
             }
             break;
         case ERROR:
             throw new ServletException( file.getException() );
         case TEMP_UNAVAILABLE:
             resp.setHeader("Retry-After", "120");//seconds
-            resp.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE );           
+            resp.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE );
             break;
         case PAYLOAD:
             resp.setContentType( file.type().mime() );
@@ -103,7 +105,7 @@ public class RubygemsServlet extends HttpServlet
         }
     }
 
-    
+
     @Override
     protected void service( HttpServletRequest req, HttpServletResponse resp )
             throws ServletException, IOException
@@ -123,7 +125,7 @@ public class RubygemsServlet extends HttpServlet
             throws ServletException, IOException
     {
         RubygemsFile file = fileSystem.get( getPathInfo( req ), req.getQueryString() );
-        if ( file.type() == FileType.API_V1 && "api_key".equals( file.name() ) ) 
+        if ( file.type() == FileType.API_V1 && "api_key".equals( file.name() ) )
         {
             log( getPathInfo( req ) );
             resp.getOutputStream().print( "behappy" );
@@ -149,5 +151,5 @@ public class RubygemsServlet extends HttpServlet
     {
         handle( req, resp, fileSystem.delete( getPathInfo( req ) ) );
     }
-    
+
 }
