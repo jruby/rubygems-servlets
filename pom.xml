@@ -6,19 +6,7 @@
   <version>0.1-SNAPSHOT</version>
   <packaging>war</packaging>
   <name>Rubygems Servlets</name>
-  <url>http://github.com/torquebox/rubygems-servlets</url> 
-  <repositories>
-    <repository>
-      <id>rso-public-grid</id>
-      <url>https://repository.sonatype.org/content/groups/sonatype-public-grid/</url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
+  <url>http://github.com/torquebox/rubygems-servlets</url>
   <dependencies>
     <dependency>
       <groupId>org.sonatype.nexus.plugins</groupId>
@@ -55,6 +43,21 @@
   <build>
     <finalName>rubygems</finalName>
     <plugins>
+
+      <plugin>
+        <groupId>de.saumya.mojo</groupId>
+        <artifactId>gem-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>initialize</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <includeRubygemsInResources>true</includeRubygemsInResources>
+        </configuration>
+      </plugin>
 
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
