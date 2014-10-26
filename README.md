@@ -5,6 +5,16 @@ rubygems-servlets
 
 webapp which hosts rubygems or a proxy to rubygems. delivers gem maven artifacts as well. the proxy can be configured to be caching proxy or non-caching proxy
 
+WARNING
+--
+
+this branch depends on
+
+* https://github.com/jruby/jruby/tree/redefine-uri-classloader-meaning
+* https://github.com/mkristian/nexus-oss/tree/jruby-1.7.17
+
+only with those branches the war file can be deployed on wlp (websphere) or jboss-wildfly (without unpacking the war).
+
 build
 --
 
@@ -16,7 +26,20 @@ or just run it in place with
 
      mvn jetty:run
 
-where the hosted rubygems are located under <http://localhost:8989/hosted> and the proxy with <https://rubygems.org> as source is reachable under <http://localhost:8989/hosted>.
+where the hosted rubygems are located under <http://localhost:8989/hosted> and the proxy with <https://rubygems.org> as source is reachable under <http://localhost:8989/caching> or <http://localhost:8989/proxy>. and the  <http://localhost:8989/merge> will combine all three to on rubygems repository.
+
+you also can start the war like this (using embedded jetty):
+
+     java -jar target/rubygems.war
+
+and adjust the <rubygems.properties> to your liking.
+
+the war can also be deployt without unpacking it on websphere (wlp) or jboss-wildfly
+
+* copy target/rubygems.war to wlp/usr/servers/{you-server-name}/dropins/
+* copy target/rubygems.war to wildfly/standalone/deployments/
+
+the default location is /var/cache/rubygems but can be adjusted with java system properties or enviroment variables. for the system properties see <rubygems.properties> file and for the environment variable take the system properties key and upcase them and replave "." with "_".
 
 usage
 --
@@ -25,11 +48,14 @@ add them to your gem command
 
 * ```gem sources add <http://localhost:8989/hosted>```
 * ```gem sources add <http://localhost:8989/caching>```
+* ```gem sources add <http://localhost:8989/proxy>```
+* ```gem sources add <http://localhost:8989/merged>```
 
-or use the (caching-)proxy with bundler
+or use the (caching-)proxy with bundler (example only for https://rubygems.org)
 
-* ```bundler config mirror.http://rubygems.org http://localhost:8989/caching```
+* ```bundler config mirror.https://rubygems.org http://localhost:8989/proxy```
 * ```bundler config mirror.https://rubygems.org http://localhost:8989/caching```
+* ```bundler config mirror.https://rubygems.org http://localhost:8989/merged```
 
 the Gem-Artifacts are accessible via
 
@@ -37,8 +63,12 @@ the Gem-Artifacts are accessible via
 *  <http://localhost:8989/hosted/maven/prereleases>
 *  <http://localhost:8989/caching/maven/releases>
 *  <http://localhost:8989/caching/maven/prereleases>
+*  <http://localhost:8989/proxy/maven/releases>
+*  <http://localhost:8989/proxy/maven/prereleases>
+*  <http://localhost:8989/merged/maven/releases>
+*  <http://localhost:8989/merged/maven/prereleases>
 
-as mirror to <http://rubygems-proxy.torquebox.org/releases> and <http://rubygems-proxy.torquebox.org/prereleases> add to your settings.xml
+you need a mirror declaration <http://rubygems-proxy.torquebox.org/releases> and <http://rubygems-proxy.torquebox.org/prereleases> in your settings.xml
 
     <settings>
       <mirrors>
@@ -55,12 +85,14 @@ as mirror to <http://rubygems-proxy.torquebox.org/releases> and <http://rubygems
           <mirrorOf>rubygems-prereleases</mirrorOf>
         </mirror>
 
+since some old gem-artifacts use the those repositories (old in sense they originally came from rubygems-proxy.torquebox.org)
+
 for more details about Gem-Artifacts see <https://github.com/sonatype/nexus-ruby-support/wiki/Gem-Artifacts>. for a solution with access control, more advanced proxy features and merging (group) to repositories see <https://github.com/sonatype/nexus-ruby-support>.
 
 non-caching proxy
 ---
 
-this proxy configuration does not cache the gem-files it self but send a redirect to <rubygems.org>. all other files are cached the same way as the caching proxy:
+this proxy configuration does not cache the gem-files itself but instead sends a redirect to <rubygems.org>. all other files are cached the same way as the caching proxy:
 
     mvn jetty:run -P proxy
 
