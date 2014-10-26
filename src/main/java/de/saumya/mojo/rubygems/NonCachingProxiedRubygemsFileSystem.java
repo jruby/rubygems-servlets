@@ -1,8 +1,8 @@
 package de.saumya.mojo.rubygems;
 
 import java.io.IOException;
+import java.io.InputStream;
 
-import org.sonatype.nexus.ruby.DefaultLayout;
 import org.sonatype.nexus.ruby.FileType;
 import org.sonatype.nexus.ruby.GemArtifactFile;
 import org.sonatype.nexus.ruby.GemFile;
@@ -11,6 +11,7 @@ import org.sonatype.nexus.ruby.RubygemsGateway;
 import org.sonatype.nexus.ruby.Sha1File;
 import org.sonatype.nexus.ruby.cuba.DefaultRubygemsFileSystem;
 import org.sonatype.nexus.ruby.layout.DELETELayout;
+import org.sonatype.nexus.ruby.layout.DefaultLayout;
 import org.sonatype.nexus.ruby.layout.ProxiedGETLayout;
 import org.sonatype.nexus.ruby.layout.ProxyStorage;
 
@@ -51,8 +52,10 @@ public class NonCachingProxiedRubygemsFileSystem extends DefaultRubygemsFileSyst
                     store.retrieve( gem );
                     // calculate the sha of this gem
                     Sha1File gemSha = super.sha1( gem );
-                    // store it locally as sha for the gem-artifact
-                    store.create( store.getInputStream( gemSha ), sha );
+                    try (InputStream is = store.getInputStream( gemSha ) ) {
+                        // store it locally as sha for the gem-artifact
+                        store.create( is, sha );
+                    }
                 }
                 catch (IOException e)
                 {

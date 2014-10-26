@@ -1,13 +1,19 @@
 package de.saumya.mojo.rubygems;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
+import java.io.OutputStream;
 import java.util.List;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 import org.sonatype.nexus.ruby.DependencyFile;
+import org.sonatype.nexus.ruby.DependencyHelper;
 import org.sonatype.nexus.ruby.Directory;
 import org.sonatype.nexus.ruby.IOUtil;
+import org.sonatype.nexus.ruby.MergeSpecsHelper;
 import org.sonatype.nexus.ruby.RubygemsFile;
 import org.sonatype.nexus.ruby.RubygemsGateway;
 import org.sonatype.nexus.ruby.SpecsIndexType;
@@ -46,7 +52,7 @@ public class MergedSimpleStorage extends SimpleStorage
                 file.resetState();
             }
         }
-        return (InputStream) file.get();
+        return super.getInputStream( file );
     }
 
     @Override
@@ -62,79 +68,67 @@ public class MergedSimpleStorage extends SimpleStorage
         // find the first and retrieve this
         for( Storage s : storages )
         {
+            file.resetState();
             s.retrieve( file );
             if ( file.exists() )
             {
                 return;
             }
-            file.resetState();
         }
-    }
-
-    private List<InputStream> collectStreams( RubygemsFile file )
-    {
-        List<InputStream> result = new ArrayList<InputStream>();
-        try
-        {
-            for( Storage s: storages )
-            {
-                s.retrieve( file );
-                if ( file.exists() )
-                {
-                    result.add( s.getInputStream( file ) );
-                }
-            }
-            file.resetState();
-        }
-        catch (IOException e)
-        {
-            file.setException( e );
-        }
-
-        return result;
     }
     
     @Override
     public void retrieve( DependencyFile file )
     {
-        // merge all existing files
-        List<InputStream> streams = collectStreams( file );
-        if ( file.hasException() )
-        {
-            return;
-        }
-        try
-        {
-            memory( gateway.mergeDependencies( streams ), file );
-        }
-        finally
-        {
-            for( InputStream is : streams )
+        DependencyHelper deps = gateway.newDependencyHelper();
+        try {
+            // merge all existing files
+            for( Storage s: storages )
             {
-                IOUtil.close( is );
-            }
+                s.retrieve( file );
+                if ( file.exists() )
+                {
+                    try ( InputStream is = s.getInputStream( file ) ) {
+                        deps.add( is );
+                    }
+                }
+                file.resetState();
+            }            
+            file.resetState();
+            
+            // no need to close the stream since it is a ByteArrayInputStream
+            memory( deps.getInputStream( false ), file );
+        }
+        catch( IOException e ) {
+            file.setException( e );
         }
     }
 
     @Override
     public void retrieve( SpecsIndexZippedFile file )
     {
-        // merge all existing files
-        List<InputStream> streams = collectStreams( file );
-        if ( file.hasException() )
-        {
-            return;
-        }
-        try
-        {
-            memory( gateway.mergeSpecs( streams, file.specsType() == SpecsIndexType.LATEST ), file );
-        }
-        finally
-        {
-            for( InputStream is : streams )
+        MergeSpecsHelper merge = gateway.newMergeSpecsHelper();
+        
+        try {
+            // merge all existing files
+            for( Storage s: storages )
             {
-                IOUtil.close( is );
+                s.retrieve( file );
+                if ( file.exists() )
+                {
+                    try ( InputStream is = new GZIPInputStream( s.getInputStream( file ) ) )
+                    {
+                        merge.add( is );
+                    }
+                }
+                file.resetState();
             }
+            
+            memory( (ByteArrayInputStream) IOUtil.toGzipped( merge.getInputStream( file.specsType() == SpecsIndexType.LATEST ) ), file );
+        }
+        catch( IOException e )
+        {
+            file.setException( e );
         }
     }    
 }

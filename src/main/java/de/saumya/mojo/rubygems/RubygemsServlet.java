@@ -1,7 +1,6 @@
 package de.saumya.mojo.rubygems;
 
 import java.io.IOException;
-import java.io.InputStream;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -14,18 +13,23 @@ import org.sonatype.nexus.ruby.GemArtifactFile;
 import org.sonatype.nexus.ruby.IOUtil;
 import org.sonatype.nexus.ruby.RubygemsFile;
 import org.sonatype.nexus.ruby.cuba.RubygemsFileSystem;
+import org.sonatype.nexus.ruby.layout.Storage;
 
 public class RubygemsServlet extends HttpServlet
 {
     private static final long serialVersionUID = -6942659125767757561L;
 
     RubygemsFileSystem fileSystem;
+    Storage storage;
 
     @Override
     public void init() throws ServletException {
         super.init();
 
-        this.fileSystem = (RubygemsFileSystem) getServletContext().getAttribute( getServletConfig().getServletName() );
+        this.fileSystem = (RubygemsFileSystem) getServletContext().getAttribute( getServletConfig().getServletName() + 
+                                                                                 "/" + RubygemsFileSystem.class.getName());
+        this.storage = (Storage) getServletContext().getAttribute( getServletConfig().getServletName() + 
+                                                                   "/" + Storage.class.getName());
     }
 
     protected void handle( HttpServletRequest req, HttpServletResponse resp, RubygemsFile file )
@@ -46,7 +50,7 @@ public class RubygemsServlet extends HttpServlet
             switch( file.type() )
             {
             case DIRECTORY:
-                if (!req.getPathInfo().endsWith( "/" ))
+                if (req.getPathInfo() == null || !req.getPathInfo().endsWith( "/" ))
                 {
                     resp.sendRedirect( req.getRequestURI() + "/" );
                     return;
@@ -82,7 +86,7 @@ public class RubygemsServlet extends HttpServlet
             {
                 resp.setHeader("Vary", "Accept");
             }
-            IOUtil.copy( (InputStream) file.get(), resp.getOutputStream() );
+            IOUtil.copy( storage.getInputStream( file ), resp.getOutputStream() );
             break;
         case NEW_INSTANCE:
             throw new ServletException( "BUG: should never reach here" );
@@ -147,14 +151,30 @@ public class RubygemsServlet extends HttpServlet
     protected void doPost( HttpServletRequest req, HttpServletResponse resp )
             throws ServletException, IOException
     {
-        handle( req, resp, fileSystem.post( req.getInputStream(), getPathInfo( req ) ) );
+        RubygemsFile file = fileSystem.post( req.getInputStream(), getPathInfo( req ) );
+        if( file.hasException() )
+        {
+            handle( req, resp, file );
+        }
+        else 
+        {
+            log( getPathInfo( req ) + " - " + file );
+        }
     }
 
     @Override
     protected void doDelete( HttpServletRequest req, HttpServletResponse resp )
             throws ServletException, IOException
     {
-        handle( req, resp, fileSystem.delete( getPathInfo( req ) ) );
+        RubygemsFile file = fileSystem.delete( getPathInfo( req ) );
+        if( file.hasException() )
+        {
+            handle( req, resp, file );
+        }
+        else 
+        {
+            log( getPathInfo( req ) + " - " + file );
+        }
     }
 
 }

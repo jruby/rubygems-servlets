@@ -12,11 +12,11 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 import org.sonatype.nexus.ruby.ApiV1File;
-import org.sonatype.nexus.ruby.DefaultLayout;
 import org.sonatype.nexus.ruby.RubygemsFile;
 import org.sonatype.nexus.ruby.RubygemsGateway;
 import org.sonatype.nexus.ruby.cuba.DefaultRubygemsFileSystem;
 import org.sonatype.nexus.ruby.cuba.RubygemsFileSystem;
+import org.sonatype.nexus.ruby.layout.DefaultLayout;
 import org.sonatype.nexus.ruby.layout.HostedDELETELayout;
 import org.sonatype.nexus.ruby.layout.HostedGETLayout;
 import org.sonatype.nexus.ruby.layout.HostedPOSTLayout;
@@ -114,13 +114,18 @@ public abstract class AbstractRubygemsServletContextListener implements ServletC
         protected void addStorageAndRegister( String key, Storage storage, RubygemsFileSystem rubygems )
         {
             this.storages.add( storage );
-            register( key, rubygems );
+            register( key, RubygemsFileSystem.class, rubygems );
+            register( key, Storage.class, storage );
         }
         
-        protected void register( String key, RubygemsFileSystem rubygems )
+        protected void register( String key, Class<?> type, Object rubygems )
         {
+            if ( type != null )
+            {
+                key = key + "/" + type.getName();
+            }
             sce.getServletContext().setAttribute( key, rubygems );
-            sce.getServletContext().log( "registered " + rubygems + " under key: " + key);
+            sce.getServletContext().log( "registered " + rubygems + " under key: " + key );
         }
         
         protected String getConfigValue( String key )

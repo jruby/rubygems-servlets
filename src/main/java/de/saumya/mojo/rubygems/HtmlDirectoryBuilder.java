@@ -36,20 +36,11 @@ public class HtmlDirectoryBuilder  {
     
     public void build(String... items) {
         for( String item : items ) {
-            if (item.matches( ".*\\.(pom|xml|gem|sha1)$" )) {
-                buildFileLink( item );
-            }
-            else {
-                buildDirectoryLink( item );
-            }
+            buildLink( item );
         }
     }
     
-    public void buildDirectoryLink(String dirname) {
-        html.append("    <a href=\"").append(dirname).append("/\">").append(dirname).append("/</a><br />\n");
-    }
-
-    public void buildFileLink(String name) {
+    public void buildLink(String name) {
         html.append("    <a href=\"").append(name).append("\">").append(name).append("</a><br />\n");
     }
     
