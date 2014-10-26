@@ -3,7 +3,7 @@ package de.saumya.mojo.rubygems;
 import java.io.File;
 import java.io.IOException;
 
-import org.jruby.embed.IsolatedScriptingContainer;
+import org.jruby.embed.ScriptingContainer;
 import org.sonatype.nexus.ruby.DefaultRubygemsGateway;
 import org.sonatype.nexus.ruby.RubygemsGateway;
 import org.sonatype.nexus.ruby.cuba.DefaultRubygemsFileSystem;
@@ -22,7 +22,7 @@ public class RubygemsServletContextListener extends AbstractRubygemsServletConte
     public void doContextInitialized( Helper configor ) throws IOException
     {
         // TODO use IsolatedScriptingContainer
-        RubygemsGateway gateway = new DefaultRubygemsGateway(new IsolatedScriptingContainer());
+        RubygemsGateway gateway = new DefaultRubygemsGateway(new ScriptingContainer());
         File file = configor.getFile( "GEM_PROXY_STORAGE" );
         if ( file != null )
         {
