@@ -19,26 +19,13 @@
       <version>2.5</version>
       <scope>provided</scope>
     </dependency>
-    <!-- for runnable and embedded jetty -->
-    <dependency>
-      <groupId>org.eclipse.jetty</groupId>
-      <artifactId>jetty-server</artifactId>
-      <version>${jetty.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.eclipse.jetty</groupId>
-      <artifactId>jetty-webapp</artifactId>
-      <version>${jetty.version}</version>
-      <scope>provided</scope>
-    </dependency>
- 
   </dependencies>
   <properties>
     <path>caching/maven/</path>
     <web.xml>web.xml</web.xml>
-    <proxy.storage></proxy.storage>
+    <proxy.storage>${project.build.directory}/proxy</proxy.storage>
     <jetty.version>8.1.14.v20131031</jetty.version>
+    <jetty.run>**/JettyRun.java</jetty.run>
   </properties>
   <build>
     <finalName>rubygems</finalName>
@@ -55,6 +42,9 @@
           </execution>
         </executions>
         <configuration>
+	  <!-- to avoid clashes with default gem-path/gem-home -->
+	  <gemHome>${project.build.directory}/gems</gemHome>
+	  <gemPath>${project.build.directory}/gems</gemPath>
           <includeRubygemsInResources>true</includeRubygemsInResources>
         </configuration>
       </plugin>
@@ -65,6 +55,7 @@
 	<configuration>
 	  <source>1.7</source>
           <target>1.7</target>
+	  <excludes><exclude>${jetty.run}</exclude></excludes>
 	</configuration>
       </plugin>
 
@@ -72,42 +63,8 @@
         <artifactId>maven-war-plugin</artifactId>
         <version>2.1.1</version>
         <configuration>
-	  <webResources>
-	    <webResource>
-	      <directory>${project.build.outputDirectory}</directory>
-	      <includes><include>**/JettyRun.class</include></includes>
-	    </webResource>
-	  </webResources>
-	  <archive>
-	    <manifest>
-	      <mainClass>de.saumya.mojo.rubygems.JettyRun</mainClass>
-	    </manifest>
-	  </archive>
           <webXml>${basedir}/src/main/webapp/WEB-INF/${web.xml}</webXml>
         </configuration>
-      </plugin>
-      <plugin>
-	<groupId>org.apache.maven.plugins</groupId>
-	<artifactId>maven-dependency-plugin</artifactId>
-	<version>2.5.1</version>
-	<executions>
-	  <execution>
-	    <id>jetty-classpath</id>
-	    <phase>prepare-package</phase>
-	    <goals>
-	      <goal>unpack-dependencies</goal>
-	    </goals>
-	    <configuration>
-	      <includeGroupIds>org.eclipse.jetty</includeGroupIds>
-	      <includeScope>provided</includeScope>
-	      <!-- remove some files in order to decrease size -->
-	      <excludes>*, about_files/*, META-INF/*</excludes>
-	      <outputDirectory>
-		${project.build.directory}/${project.artifactId}
-	      </outputDirectory>
-	    </configuration>
-	  </execution>
-	</executions>
       </plugin>
 
       <!-- we do not need to deploy that here -->
@@ -155,6 +112,72 @@
 
   <profiles>
     <profile>
+      <id>executable</id>
+      <dependencies>
+	<dependency>
+	  <groupId>org.eclipse.jetty</groupId>
+	  <artifactId>jetty-server</artifactId>
+	  <version>${jetty.version}</version>
+	  <scope>provided</scope>
+	</dependency>
+	<dependency>
+	  <groupId>org.eclipse.jetty</groupId>
+	  <artifactId>jetty-webapp</artifactId>
+	  <version>${jetty.version}</version>
+	  <scope>provided</scope>
+	</dependency>
+      </dependencies>
+      <properties>
+	<jetty.run>nothing</jetty.run>
+      </properties>
+      <build>
+	<plugins>
+
+	  <plugin>
+            <artifactId>maven-war-plugin</artifactId>
+            <configuration>
+	      <webResources>
+		<webResource>
+		  <directory>${project.build.outputDirectory}</directory>
+		  <includes><include>**/JettyRun.class</include></includes>
+		</webResource>
+	      </webResources>
+	      <archive>
+		<manifest>
+		  <mainClass>de.saumya.mojo.rubygems.JettyRun</mainClass>
+		</manifest>
+	      </archive>
+            </configuration>
+	  </plugin>
+
+	  <plugin>
+	    <groupId>org.apache.maven.plugins</groupId>
+	    <artifactId>maven-dependency-plugin</artifactId>
+	    <version>2.5.1</version>
+	    <executions>
+	      <execution>
+		<id>jetty-classpath</id>
+		<phase>prepare-package</phase>
+		<goals>
+		  <goal>unpack-dependencies</goal>
+		</goals>
+		<configuration>
+		  <includeGroupIds>org.eclipse.jetty</includeGroupIds>
+		  <includeScope>provided</includeScope>
+		  <!-- remove some files in order to decrease size -->
+		  <excludes>*, about_files/*, META-INF/*</excludes>
+		  <outputDirectory>
+		    ${project.build.directory}/${project.artifactId}
+		  </outputDirectory>
+		</configuration>
+	      </execution>
+	    </executions>
+	  </plugin>
+	  
+	</plugins>
+      </build>
+    </profile>
+    <profile>
       <id>merged</id>
       <properties>
 	<path>merged/maven/</path>
@@ -164,7 +187,6 @@
       <id>proxy</id>
       <properties>
 	<path>proxy/maven/</path>
-	<proxy.storage>${project.build.directory}/proxy</proxy.storage>
       </properties>
     </profile>
     <profile>
