@@ -1,13 +1,10 @@
 package de.saumya.mojo.rubygems;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
 
 import org.sonatype.nexus.ruby.DependencyFile;
 import org.sonatype.nexus.ruby.DependencyHelper;
