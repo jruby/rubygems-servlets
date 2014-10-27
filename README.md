@@ -5,16 +5,6 @@ rubygems-servlets
 
 webapp which hosts rubygems or a proxy to rubygems. delivers gem maven artifacts as well. the proxy can be configured to be caching proxy or non-caching proxy
 
-WARNING
---
-
-this branch depends on
-
-* https://github.com/jruby/jruby/tree/redefine-uri-classloader-meaning
-* https://github.com/mkristian/nexus-oss/tree/jruby-1.7.17
-
-only with those branches the war file can be deployed on wlp (websphere) or jboss-wildfly (without unpacking the war).
-
 build
 --
 
@@ -30,16 +20,10 @@ where the hosted rubygems are located under <http://localhost:8989/hosted> and t
 
 you also can start the war like this (using embedded jetty):
 
+     mvn package -Pexecutable
      java -jar target/rubygems.war
 
 and adjust the <rubygems.properties> to your liking.
-
-the war can also be deployt without unpacking it on websphere (wlp) or jboss-wildfly
-
-* copy target/rubygems.war to wlp/usr/servers/{you-server-name}/dropins/
-* copy target/rubygems.war to wildfly/standalone/deployments/
-
-the default location is /var/cache/rubygems but can be adjusted with java system properties or enviroment variables. for the system properties see <rubygems.properties> file and for the environment variable take the system properties key and upcase them and replave "." with "_".
 
 usage
 --
