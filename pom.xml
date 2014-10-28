@@ -45,24 +45,6 @@
     <plugins>
 
       <plugin>
-        <groupId>de.saumya.mojo</groupId>
-        <artifactId>gem-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <goals>
-              <goal>initialize</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-	  <!-- to avoid clashes with default gem-path/gem-home -->
-	  <gemHome>${project.build.directory}/gems</gemHome>
-	  <gemPath>${project.build.directory}/gems</gemPath>
-          <includeRubygemsInResources>true</includeRubygemsInResources>
-        </configuration>
-      </plugin>
-
-      <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.1</version>
 	<configuration>
