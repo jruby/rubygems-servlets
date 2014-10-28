@@ -12,6 +12,7 @@ import org.sonatype.nexus.ruby.RubygemsGateway;
 import org.sonatype.nexus.ruby.cuba.RubygemsFileSystem;
 import org.sonatype.nexus.ruby.layout.CachingProxyStorage;
 import org.sonatype.nexus.ruby.layout.ProxyStorage;
+import org.sonatype.nexus.ruby.layout.Storage;
 
 public class LegacyRubygemsServletContextListener extends AbstractRubygemsServletContextListener
 {
@@ -55,6 +56,7 @@ public class LegacyRubygemsServletContextListener extends AbstractRubygemsServle
         ProxyStorage storage = new CachingProxyStorage( path, new URL( "https://rubygems.org" ) );
         RubygemsFileSystem rubygems = new LegacyRubygemsFileSystem( gateway, storage );
         configor.register( RubygemsFileSystem.class.getName(), null, rubygems );
+        configor.register( Storage.class.getName(), null, storage );
     }
 
 }

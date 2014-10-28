@@ -10,6 +10,7 @@ import org.sonatype.nexus.ruby.FileType;
 import org.sonatype.nexus.ruby.GemArtifactFile;
 import org.sonatype.nexus.ruby.RubygemsFile;
 import org.sonatype.nexus.ruby.cuba.RubygemsFileSystem;
+import org.sonatype.nexus.ruby.layout.Storage;
 
 public class LegacyRubygemsServlet extends RubygemsServlet
 {
@@ -20,6 +21,7 @@ public class LegacyRubygemsServlet extends RubygemsServlet
         super.init();
         
         this.fileSystem = (RubygemsFileSystem) getServletContext().getAttribute( RubygemsFileSystem.class.getName() );
+        this.storage = (Storage) getServletContext().getAttribute( Storage.class.getName());
     }
     
     protected void handle( HttpServletRequest req, HttpServletResponse resp, RubygemsFile file ) 
