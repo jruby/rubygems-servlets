@@ -3,9 +3,12 @@ package de.saumya.mojo.rubygems;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.sonatype.nexus.ruby.DependencyData;
 import org.sonatype.nexus.ruby.FileType;
 import org.sonatype.nexus.ruby.GemArtifactFile;
 import org.sonatype.nexus.ruby.GemFile;
+import org.sonatype.nexus.ruby.GemspecFile;
+import org.sonatype.nexus.ruby.PomFile;
 import org.sonatype.nexus.ruby.RubygemsFile;
 import org.sonatype.nexus.ruby.RubygemsGateway;
 import org.sonatype.nexus.ruby.Sha1File;
@@ -80,7 +83,48 @@ public class NonCachingProxiedRubygemsFileSystem extends DefaultRubygemsFileSyst
             // just the raw file without store interaction
             return layout.gemFile( name, version, platform );
         }
-        
+
+        @Override
+        protected void setPomPayload(PomFile pom, boolean snapshot) {
+          store.retrieve( pom );
+          if ( pom.exists() )
+          {
+            // we have cache pom.xml
+            return;
+          }
+          GemFile gem = null;
+          try {
+            DependencyData dependencies = newDependencyData(pom.dependency());
+            if ("java".equals(dependencies.platform(pom.version()))) {
+              gem = pom.gem( dependencies );
+              store.retrieve( gem );
+              super.setPomPayload( pom, snapshot );
+              // cache the pom.xml for later retrievals 
+              try
+              {
+                store.create( store.getInputStream( pom ), pom );
+              }
+              catch (IOException e)
+              {
+                pom.setException( e );
+              }
+            }
+            else
+            {
+              super.setPomPayload( pom, snapshot );
+            }
+          }
+          catch (IOException e) {
+            pom.setException(e);
+          }
+          finally {
+            if (gem != null) {
+              // we cached the pom.xml so no need to store the gem any longer
+              store.delete(gem);
+            }
+          }
+        }
+
         @Override
         protected void setGemArtifactPayload( GemArtifactFile file )
         {
