@@ -38,7 +38,7 @@
     <web.xml>web.xml</web.xml>
     <proxy.storage>${project.build.directory}/proxy</proxy.storage>
     <jetty.version>8.1.14.v20131031</jetty.version>
-    <jetty.run>**/JettyRun.java</jetty.run>
+    <jetty.run>**/Jetty*.java</jetty.run>
   </properties>
   <build>
     <finalName>rubygems</finalName>
@@ -134,7 +134,7 @@
 	      <webResources>
 		<webResource>
 		  <directory>${project.build.outputDirectory}</directory>
-		  <includes><include>**/JettyRun.class</include></includes>
+		  <includes><include>**/Jetty*.class</include></includes>
 		</webResource>
 	      </webResources>
 	      <archive>

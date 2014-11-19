@@ -14,6 +14,7 @@ import org.eclipse.jetty.webapp.WebAppContext;
 
 public class JettyRun
 {
+
     public static void main(String[] args)  {
         Properties props = new Properties();
         String filename = args.length == 0 ? "rubygems.properties" : args[ 0 ];
@@ -59,11 +60,9 @@ public class JettyRun
         context.setWar(location.toExternalForm());
      
         server.setHandler(context);
+	Runtime.getRuntime().addShutdownHook(new JettyStop(server));
         try {
             server.start();
-            System.in.read();
-            server.stop();
-            server.join();
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(100);
