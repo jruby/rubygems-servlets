@@ -18,6 +18,9 @@ or just run it in place with
 
 where the hosted rubygems are located under <http://localhost:8989/hosted> and the proxy with <https://rubygems.org> as source is reachable under <http://localhost:8989/caching> or <http://localhost:8989/proxy>. and the  <http://localhost:8989/merge> will combine all three to on rubygems repository.
 
+executable standalone
+---
+
 you also can start the war like this (using embedded jetty):
 
      mvn package -Pexecutable
