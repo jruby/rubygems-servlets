@@ -7,19 +7,6 @@
   <packaging>war</packaging>
   <name>Rubygems Servlets</name>
   <url>http://github.com/torquebox/rubygems-servlets</url>
-  <repositories>
-    <repository>
-      <id>rso-public-grid</id>
-      <url>https://repository.sonatype.org/content/groups/sonatype-public-grid/</url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
-
   <dependencies>
     <dependency>
       <groupId>org.sonatype.nexus.plugins</groupId>
@@ -32,6 +19,18 @@
       <version>2.5</version>
       <scope>provided</scope>
     </dependency>
+	<dependency>
+	  <groupId>org.eclipse.jetty</groupId>
+	  <artifactId>jetty-server</artifactId>
+	  <version>${jetty.version}</version>
+	  <scope>provided</scope>
+	</dependency>
+	<dependency>
+	  <groupId>org.eclipse.jetty</groupId>
+	  <artifactId>jetty-webapp</artifactId>
+	  <version>${jetty.version}</version>
+	  <scope>provided</scope>
+	</dependency>
   </dependencies>
   <properties>
     <path>caching/maven/</path>
@@ -109,18 +108,6 @@
     <profile>
       <id>executable</id>
       <dependencies>
-	<dependency>
-	  <groupId>org.eclipse.jetty</groupId>
-	  <artifactId>jetty-server</artifactId>
-	  <version>${jetty.version}</version>
-	  <scope>provided</scope>
-	</dependency>
-	<dependency>
-	  <groupId>org.eclipse.jetty</groupId>
-	  <artifactId>jetty-webapp</artifactId>
-	  <version>${jetty.version}</version>
-	  <scope>provided</scope>
-	</dependency>
       </dependencies>
       <properties>
 	<jetty.run>nothing</jetty.run>
