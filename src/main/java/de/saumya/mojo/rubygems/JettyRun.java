@@ -1,16 +1,11 @@
 package de.saumya.mojo.rubygems;
 
-import java.io.FileNotFoundException;
+import de.saumya.mojo.mains.JettyRunMain;
+
 import java.io.FileReader;
 import java.io.IOException;
-import java.net.URL;
-import java.security.ProtectionDomain;
 import java.util.Properties;
 
-import org.eclipse.jetty.server.Connector;
-import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.bio.SocketConnector;
-import org.eclipse.jetty.webapp.WebAppContext;
 
 public class JettyRun
 {
@@ -31,16 +26,6 @@ public class JettyRun
     	}
         System.err.println();
 
-        Server server = new Server();
-        SocketConnector connector = new SocketConnector();
-     
-        // Set some timeout options to make debugging easier.
-        connector.setMaxIdleTime(1000 * 60 * 60);
-        connector.setSoLingerTime(-1);
-        connector.setPort(Integer.parseInt( props.getProperty( "port", "8989" ) ) );
-        connector.setHost( props.getProperty( "host" ) );
-        server.setConnectors(new Connector[] { connector });
-
         String basedir = props.getProperty( "gem.storage.base", "rubygems" );
         
         setProperty( props, "gem.caching.proxy.storage", basedir + "/caching" );
@@ -49,24 +34,7 @@ public class JettyRun
         setProperty( props, "gem.caching.proxy.url", "https://rubygems.org" );
         setProperty( props, "gem.proxy.url", "https://rubygems.org" );
 
-        WebAppContext context = new WebAppContext();
-        context.setServer(server);
-        context.setContextPath("/");
-        context.setExtractWAR( false );
-        context.setCopyWebInf( true );
-     
-        ProtectionDomain protectionDomain = JettyRun.class.getProtectionDomain();
-        URL location = protectionDomain.getCodeSource().getLocation();
-        context.setWar(location.toExternalForm());
-     
-        server.setHandler(context);
-	Runtime.getRuntime().addShutdownHook(new JettyStop(server));
-        try {
-            server.start();
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.exit(100);
-        }
+	JettyRunMain.main( props, args );
     }
     
     static private void setProperty( Properties props, String key, String defaultValue ) {

@@ -20,6 +20,12 @@
       <scope>provided</scope>
     </dependency>
 	<dependency>
+	  <groupId>de.saumya.mojo</groupId>
+	  <artifactId>jruby-mains</artifactId>
+	  <version>0.1.0</version>
+	  <scope>provided</scope>
+	</dependency>
+	<dependency>
 	  <groupId>org.eclipse.jetty</groupId>
 	  <artifactId>jetty-server</artifactId>
 	  <version>${jetty.version}</version>
@@ -144,7 +150,7 @@
 		  <goal>unpack-dependencies</goal>
 		</goals>
 		<configuration>
-		  <includeGroupIds>org.eclipse.jetty</includeGroupIds>
+		  <includeGroupIds>org.eclipse.jetty,de.saumya.mojo</includeGroupIds>
 		  <includeScope>provided</includeScope>
 		  <!-- remove some files in order to decrease size -->
 		  <excludes>*, about_files/*, META-INF/*</excludes>
