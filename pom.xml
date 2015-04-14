@@ -6,7 +6,9 @@
   <version>0.1</version>
   <packaging>war</packaging>
   <name>Rubygems Servlets</name>
-  <url>http://github.com/torquebox/rubygems-servlets</url> <licenses>
+  <url>http://github.com/torquebox/rubygems-servlets</url>
+  <description>a servlet which can run a hosted rubygems repo, or caching proxy to remote repo, or just a proxy. finally you can have a merged repo of three types.</description>
+  <licenses>
     <license>
       <name>AGPL</name>
     </license>
