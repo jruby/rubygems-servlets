@@ -6,7 +6,33 @@
   <version>0.1-SNAPSHOT</version>
   <packaging>war</packaging>
   <name>Rubygems Servlets</name>
-  <url>http://github.com/torquebox/rubygems-servlets</url>
+  <url>http://github.com/torquebox/rubygems-servlets</url> <licenses>
+    <license>
+      <name>AGPL</name>
+    </license>
+  </licenses>
+  <developers>
+    <developer>
+      <name>Christian Meier</name>
+      <email>m.kristian@web.de</email>
+    </developer>
+  </developers>
+  <scm>
+    <connection>scm:git:https://github.com/mkristian/jruby-mains.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com:mkristian/jruby-mains.git</developerConnection>
+    <url>https://github.com/mkristian/jruby-mains</url>
+  </scm>
+  <distributionManagement>
+    <repository>
+      <id>sonatype-nexus-staging</id>
+      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+    </repository>
+    <snapshotRepository>
+      <id>sonatype-nexus-snapshots</id>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+    </snapshotRepository>
+  </distributionManagement>
+
   <dependencies>
     <dependency>
       <groupId>org.sonatype.nexus.plugins</groupId>
@@ -243,5 +269,58 @@
         </plugins>
       </build>
     </profile>
+
+    <profile>
+      <id>release</id>
+      <activation>
+        <property>
+          <name>performRelease</name>
+          <value>true</value>
+        </property>
+      </activation>
+      <build>
+        <defaultGoal>deploy</defaultGoal>
+        <plugins>
+          <plugin>
+            <artifactId>maven-source-plugin</artifactId>
+            <version>2.4</version>
+            <executions>
+              <execution>
+                <id>attach-sources</id>
+                <goals>
+                  <goal>jar-no-fork</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <version>2.10.1</version>
+            <executions>
+              <execution>
+                <id>attach-javadocs</id>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <version>1.5</version>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
   </profiles>
 </project>
