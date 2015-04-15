@@ -20,9 +20,9 @@
     </developer>
   </developers>
   <scm>
-    <connection>scm:git:https://github.com/mkristian/jruby-mains.git</connection>
-    <developerConnection>scm:git:ssh://git@github.com:mkristian/jruby-mains.git</developerConnection>
-    <url>https://github.com/mkristian/jruby-mains</url>
+    <connection>scm:git:https://github.com/torquebox/rubygems-servlets.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com:torquebox/rubygems-servlet.git</developerConnection>
+    <url>https://github.com/torquebox/rubygems-servlets</url>
   </scm>
   <distributionManagement>
     <repository>
