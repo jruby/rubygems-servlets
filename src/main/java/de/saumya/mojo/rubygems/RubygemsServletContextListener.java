@@ -3,6 +3,7 @@ package de.saumya.mojo.rubygems;
 import java.io.File;
 import java.io.IOException;
 
+import org.jruby.embed.IsolatedScriptingContainer;
 import org.jruby.embed.ScriptingContainer;
 import org.sonatype.nexus.ruby.DefaultRubygemsGateway;
 import org.sonatype.nexus.ruby.RubygemsGateway;
@@ -21,30 +22,34 @@ public class RubygemsServletContextListener extends AbstractRubygemsServletConte
     
     public void doContextInitialized( Helper configor ) throws IOException
     {
-        // TODO use IsolatedScriptingContainer
-        RubygemsGateway gateway = new DefaultRubygemsGateway(new ScriptingContainer());
-        File file = configor.getFile( "GEM_PROXY_STORAGE" );
+        RubygemsGateway gateway = new DefaultRubygemsGateway(new IsolatedScriptingContainer());
+        File file = configor.getFile( "GEM_PROXY_STORAGE", "/var/cache/rubygems/proxy" );
         if ( file != null )
         {
-            ProxyStorage storage = new CachingProxyStorage( file, configor.getURL( "GEM_PROXY_URL" ) );
-            configor.addStorageAndRegister( "proxy", storage, new NonCachingProxiedRubygemsFileSystem( gateway, storage ) );
+            ProxyStorage storage = new CachingProxyStorage( file, configor.getURL( "GEM_PROXY_URL",
+                    "https://rubygems.org" ) );
+            configor.addStorageAndRegister( "proxy",
+                    storage, new NonCachingProxiedRubygemsFileSystem( gateway, storage ) );
         }
         
-        file = configor.getFile( "GEM_CACHING_PROXY_STORAGE" );
+        file = configor.getFile( "GEM_CACHING_PROXY_STORAGE", "/var/cache/rubygems/caching" );
         if ( file != null )
         {
-            ProxyStorage storage = new CachingProxyStorage( file, configor.getURL( "GEM_CACHING_PROXY_URL" ) );
-            configor.addStorageAndRegister( "caching", storage, new ProxiedRubygemsFileSystem( gateway, storage ) );
+            ProxyStorage storage = new CachingProxyStorage( file, configor.getURL( "GEM_CACHING_PROXY_URL",
+                    "https://rubygems.org" ) );
+            configor.addStorageAndRegister( "caching", storage,
+                    new ProxiedRubygemsFileSystem( gateway, storage ) );
         }
         
-        file = new File( configor.getConfigValue( "GEM_HOSTED_STORAGE" ) );
+        file = configor.getFile( "GEM_HOSTED_STORAGE",  "/var/cache/rubygems/hosted");
         if ( file != null )
         {
             Storage storage =  new SimpleStorage( file );
-            configor.addStorageAndRegister( "hosted", storage, new HostedRubygemsFileSystem( gateway, storage ) );
+            configor.addStorageAndRegister( "hosted", storage,
+                    new HostedRubygemsFileSystem( gateway, storage ) );
         }
         
-        if ( "true".equals( configor.getConfigValue( "GEM_MERGED" ) ) )
+        if ( "true".equals( configor.getConfigValue( "GEM_MERGED", "true" ) ) )
         {
             Storage storage = new MergedSimpleStorage( gateway, configor.storages );
             Layout layout = new GETLayout( gateway, storage );

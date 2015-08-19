@@ -1,6 +1,7 @@
 package de.saumya.mojo.rubygems;
 
-import de.saumya.mojo.mains.JettyRunMain;
+import org.eclipse.jetty.server.Server;
+import org.jruby.mains.JettyRunMain;
 
 import java.io.FileReader;
 import java.io.IOException;
@@ -33,8 +34,7 @@ public class JettyRun
         setProperty( props, "gem.hosted.storage", basedir + "/hosted" );
         setProperty( props, "gem.caching.proxy.url", "https://rubygems.org" );
         setProperty( props, "gem.proxy.url", "https://rubygems.org" );
-
-	JettyRunMain.main( props, args );
+    	JettyRunMain.main(props, args);
     }
     
     static private void setProperty( Properties props, String key, String defaultValue ) {

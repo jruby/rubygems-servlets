@@ -11,6 +11,7 @@ import java.util.List;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
+import org.eclipse.jetty.util.log.StdErrLog;
 import org.sonatype.nexus.ruby.ApiV1File;
 import org.sonatype.nexus.ruby.RubygemsFile;
 import org.sonatype.nexus.ruby.RubygemsGateway;
@@ -91,9 +92,9 @@ public abstract class AbstractRubygemsServletContextListener implements ServletC
             this.sce = sce;
         }
         
-        protected File getFile( String key )
+        protected File getFile( String key, String defaultValue )
         {
-            String path = getConfigValue( key );
+            String path = getConfigValue( key, defaultValue );
             if ( path == null || path.isEmpty() )
             {
                 return null;
@@ -101,9 +102,9 @@ public abstract class AbstractRubygemsServletContextListener implements ServletC
             return new File( path );
         }
 
-        protected URL getURL( String key ) throws MalformedURLException
+        protected URL getURL( String key, String defaultValue ) throws MalformedURLException
         {
-            String url = getConfigValue( key );
+            String url = getConfigValue( key, defaultValue );
             if ( url == null )
             {
                 throw new RuntimeException( "no url given");
@@ -114,8 +115,8 @@ public abstract class AbstractRubygemsServletContextListener implements ServletC
         protected void addStorageAndRegister( String key, Storage storage, RubygemsFileSystem rubygems )
         {
             this.storages.add( storage );
-            register( key, RubygemsFileSystem.class, rubygems );
-            register( key, Storage.class, storage );
+            register(key, RubygemsFileSystem.class, rubygems);
+            register(key, Storage.class, storage);
         }
         
         protected void register( String key, Class<?> type, Object rubygems )
@@ -124,11 +125,11 @@ public abstract class AbstractRubygemsServletContextListener implements ServletC
             {
                 key = key + "/" + type.getName();
             }
-            sce.getServletContext().setAttribute( key, rubygems );
-            sce.getServletContext().log( "registered " + rubygems + " under key: " + key );
+            sce.getServletContext().setAttribute(key, rubygems);
+            sce.getServletContext().log("registered " + rubygems + " under key: " + key);
         }
-        
-        protected String getConfigValue( String key )
+
+        protected String getConfigValue( String key, String defaultValue )
         {
             String value = System.getenv( key );
             if(value == null){
@@ -138,16 +139,26 @@ public abstract class AbstractRubygemsServletContextListener implements ServletC
                     String iKey = pKey.replace( ".", "-" );
                     value = sce.getServletContext().getInitParameter( iKey );
                     if (value == null){
-                        String message = "could not find config: " +
-                                "system property( " + pKey + " ) - " +
-                                "environment variable( " + key + " ) - " +
-                                "context init parameter( " + iKey + " )";
-                        sce.getServletContext().log( message );
-                        return null;
+                        if (defaultValue != null) {
+                            value = defaultValue;
+                        }
+                        else {
+                            String message = "could not find config: " +
+                                    "system property( " + pKey + " ) - " +
+                                    "environment variable( " + key + " ) - " +
+                                    "context init parameter( " + iKey + " )";
+                            sce.getServletContext().log(message);
+                            return null;
+                        }
                     }
                 }
             }
-            sce.getServletContext().log( key + " resolved to " + value ); 
+            if (value == null || value.length() == 0) {
+                sce.getServletContext().log(key + " not found");
+            }
+            else {
+                sce.getServletContext().log(key + " resolved to " + value);
+            }
             return value;
         }
     }
