@@ -48,7 +48,7 @@ public class LegacyRubygemsServletContextListener extends AbstractRubygemsServle
     {
         // TODO use IsolatedScriptingContainer
         RubygemsGateway gateway = new DefaultRubygemsGateway(new ScriptingContainer());
-        File path = configor.getFile( "GEM_PROXY_STORAGE" );  
+        File path = configor.getFile( "GEM_PROXY_STORAGE", "var/cache/rubygems/proxy" );
         if ( path == null )
         {
             throw new RuntimeException( "no storage path given");
