@@ -1,6 +1,7 @@
 language: java
 jdk:
   - oraclejdk8
+sudo: false
 install:  /bin/true
 script: mvn verify -P run-its -P $PROFILE
 env:
