@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>de.saumya.mojo</groupId>
   <artifactId>rubygems</artifactId>
-  <version>0.2</version>
+  <version>0.2.1</version>
   <packaging>war</packaging>
   <name>Rubygems Servlets</name>
   <url>http://github.com/torquebox/rubygems-servlets</url>
@@ -325,6 +325,5 @@
         <deploy.skip>false</deploy.skip>
       </properties>
     </profile>
-
   </profiles>
 </project>

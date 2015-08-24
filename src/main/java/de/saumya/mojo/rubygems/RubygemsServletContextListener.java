@@ -2,6 +2,7 @@ package de.saumya.mojo.rubygems;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 
 import org.jruby.embed.IsolatedScriptingContainer;
 import org.jruby.embed.ScriptingContainer;
@@ -26,10 +27,11 @@ public class RubygemsServletContextListener extends AbstractRubygemsServletConte
         File file = configor.getFile( "GEM_PROXY_STORAGE", "/var/cache/rubygems/proxy" );
         if ( file != null )
         {
-            ProxyStorage storage = new CachingProxyStorage( file, configor.getURL( "GEM_PROXY_URL",
-                    "https://rubygems.org" ) );
+            URL proxyUrl = configor.getURL( "GEM_PROXY_URL", "https://rubygems.org" );
+            ProxyStorage storage = new CachingProxyStorage( file, proxyUrl );
             configor.addStorageAndRegister( "proxy",
                     storage, new NonCachingProxiedRubygemsFileSystem( gateway, storage ) );
+            configor.register( "proxy", URL.class, proxyUrl );
         }
         
         file = configor.getFile( "GEM_CACHING_PROXY_STORAGE", "/var/cache/rubygems/caching" );

@@ -1,6 +1,7 @@
 package de.saumya.mojo.rubygems;
 
 import java.io.IOException;
+import java.net.URL;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -21,23 +22,23 @@ public class RubygemsServlet extends HttpServlet
 
     RubygemsFileSystem fileSystem;
     Storage storage;
+    String proxyUrl;
 
     @Override
     public void init() throws ServletException {
         super.init();
 
-        this.fileSystem = (RubygemsFileSystem) getServletContext().getAttribute( getServletConfig().getServletName() + 
-                                                                                 "/" + RubygemsFileSystem.class.getName());
-        this.storage = (Storage) getServletContext().getAttribute( getServletConfig().getServletName() + 
-                                                                   "/" + Storage.class.getName());
+        String name = getServletConfig().getServletName();
+        this.fileSystem = (RubygemsFileSystem) getServletContext().getAttribute( name + "/" + RubygemsFileSystem.class.getName());
+        this.storage = (Storage) getServletContext().getAttribute( name + "/" + Storage.class.getName());
+        URL url = (URL) getServletContext().getAttribute( name + "/" + URL.class.getName());
+        this.proxyUrl = url == null ? null : url.toString();
     }
 
     protected void handle( HttpServletRequest req, HttpServletResponse resp, RubygemsFile file )
             throws IOException, ServletException
     {
         log( getPathInfo( req ) + " - " + file );
-        String proxyUrl = getServletContext().getInitParameter("gem-proxy-url");
-
         switch( file.state() )
         {
         case FORBIDDEN:
@@ -59,7 +60,7 @@ public class RubygemsServlet extends HttpServlet
                 break;
             case GEM_ARTIFACT:
                 // we can pass in null as dependenciesData since we have already the gem
-                resp.sendRedirect( proxyUrl + "/gems/" + ((GemArtifactFile) file ).gem( null ).filename() + ".gem" );
+                resp.sendRedirect( this.proxyUrl + "/gems/" + ((GemArtifactFile) file ).gem( null ).filename() + ".gem" );
                 return;
             case GEM:
 //            case GEMSPEC:
