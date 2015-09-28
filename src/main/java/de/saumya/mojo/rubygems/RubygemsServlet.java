@@ -63,8 +63,7 @@ public class RubygemsServlet extends HttpServlet
                 resp.sendRedirect( this.proxyUrl + "/gems/" + ((GemArtifactFile) file ).gem( null ).filename() + ".gem" );
                 return;
             case GEM:
-//            case GEMSPEC:
-                resp.sendRedirect( "https://rubygems.org/" + file.remotePath() );
+                resp.sendRedirect( this.proxyUrl + file.remotePath() );
                 return;
             default:
                 resp.sendError( HttpServletResponse.SC_NOT_FOUND,
