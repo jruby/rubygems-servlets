@@ -16,6 +16,8 @@ public class LegacyRubygemsServlet extends RubygemsServlet
 {
     private static final long serialVersionUID = 2441264980328145654L;
 
+    private static final String RUBYGEMS_S3_URL = "http://s3.amazonaws.com/production.s3.rubygems.org/gems/";
+ 
     @Override
     public void init() throws ServletException {
         super.init();
@@ -29,7 +31,10 @@ public class LegacyRubygemsServlet extends RubygemsServlet
     {
         if ( file.type() == FileType.GEM_ARTIFACT )
         {
-            resp.sendRedirect( "https://rubygems.org/gems/" + ((GemArtifactFile) file ).gem( null ).filename() + ".gem" );
+            // use a non https url here since IVY can not handle
+            // redirects from https to http
+            // https://github.com/torquebox/rubygems-servlets/issues/11
+            resp.sendRedirect( RUBYGEMS_S3_URL + ((GemArtifactFile) file ).gem( null ).filename() + ".gem" );
         }
         else
         {
