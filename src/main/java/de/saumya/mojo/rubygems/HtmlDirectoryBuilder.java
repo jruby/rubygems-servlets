@@ -2,14 +2,18 @@ package de.saumya.mojo.rubygems;
 
 import org.sonatype.nexus.ruby.Directory;
 
+import java.util.Arrays;
+
 public class HtmlDirectoryBuilder  {
     
     private StringBuilder html = new StringBuilder("<!DOCTYPE html>\n");
     
     public HtmlDirectoryBuilder( String root, Directory file )
     {
-        buildHeader( root + file.remotePath() );
-        build(file.getItems());
+        buildHeader(root + file.remotePath());
+        String[] items = file.getItems();
+        Arrays.sort(items);
+        build(items);
         buildFooter();
     }
 
