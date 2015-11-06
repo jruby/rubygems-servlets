@@ -25,14 +25,15 @@ public class JettyRun
         catch (IOException e)
         {
             System.err.println( "could not load properties from " + filename + " :" + e.getMessage() );
-            System.err.println( "      using defaults" );
+            System.err.println( "      using system properties and defaults" );
+            props = System.getProperties();
     	}
         System.err.println();
 
-        String basedir = props.getProperty( "gem.storage.base", "rubygems" );
+        String basedir = props.getProperty("gem.storage.base", "rubygems");
         
-        setProperty( props, "gem.caching.proxy.storage", basedir + "/caching" );
-        setProperty( props, "gem.proxy.storage", basedir + "/proxy" );
+        setProperty(props, "gem.caching.proxy.storage", basedir + "/caching");
+        setProperty(props, "gem.proxy.storage", basedir + "/proxy");
         setProperty(props, "gem.hosted.storage", basedir + "/hosted");
         setProperty(props, "gem.caching.proxy.url", "https://rubygems.org");
         setProperty(props, "gem.proxy.url", "https://rubygems.org");
