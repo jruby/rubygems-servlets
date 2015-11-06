@@ -70,7 +70,7 @@
     <path>caching/maven/</path>
     <web.xml>web.xml</web.xml>
     <proxy.storage>${project.build.directory}/proxy</proxy.storage>
-    <jetty.version>9.3.2.v20150730</jetty.version>
+    <jetty.version>8.1.18.v20150929</jetty.version>
     <jetty.run>**/JettyRun.java</jetty.run>
     <deploy.skip>true</deploy.skip>
   </properties>
@@ -156,6 +156,10 @@
                   <directory>${project.build.outputDirectory}</directory>
                   <includes><include>**/JettyRun.class</include></includes>
                 </webResource>
+                <webResource>
+                  <directory>${project.build.directory}/${project.artifactId}</directory>
+                  <includes><include>**</include></includes>
+                </webResource>
               </webResources>
               <archive>
                 <manifest>
@@ -177,7 +181,6 @@
                   <goal>unpack-dependencies</goal>
                 </goals>
                 <configuration>
-                  <includeGroupIds>org.eclipse.jetty,de.saumya.mojo</includeGroupIds>
                   <includeScope>provided</includeScope>
                   <!-- remove some files in order to decrease size -->
                   <excludes>*, about_files/*, META-INF/*</excludes>
