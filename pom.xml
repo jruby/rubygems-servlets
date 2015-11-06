@@ -140,14 +140,12 @@
   <profiles>
     <profile>
       <id>executable</id>
-      <dependencies>
-      </dependencies>
       <properties>
         <jetty.run>nothing</jetty.run>
+        <deploy.skip>false</deploy.skip>
       </properties>
       <build>
         <plugins>
-
           <plugin>
             <artifactId>maven-war-plugin</artifactId>
             <configuration>
@@ -191,7 +189,6 @@
               </execution>
             </executions>
           </plugin>
-          
         </plugins>
       </build>
     </profile>
@@ -324,9 +321,6 @@
           </plugin>
         </plugins>
       </build>
-      <properties>
-        <deploy.skip>false</deploy.skip>
-      </properties>
     </profile>
   </profiles>
 </project>

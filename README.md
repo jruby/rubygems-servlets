@@ -107,6 +107,15 @@ some integration tests for proxy feature can be executed with
 	
     mvn -P run-its -Plegacy
 
+deploy to maven central
+-----------------------
+
+    mvn versions:set
+    mvn -Prelease,executable
+    git tag ...
+    mvn versions:set
+    
+
 contributing
 ------------
 
