@@ -99,7 +99,9 @@
       <plugin>
         <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-maven-plugin</artifactId>
-        <version>${jetty.version}</version>
+        <!-- we need a different version since there is no 8.1.18.xyz of this
+             plugin -->
+        <version>9.3.5.v20151012</version>
         <configuration>
           <webXml>${basedir}/src/main/webapp/WEB-INF/${web.xml}</webXml>
           <scanIntervalSeconds>10</scanIntervalSeconds>
