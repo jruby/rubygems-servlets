@@ -111,10 +111,13 @@ deploy to maven central
 -----------------------
 
     mvn versions:set
+    git ci -m 'prepare release' pom.xml
     mvn -Prelease,executable
     git tag ...
     mvn versions:set
-    
+    git ci -m 'next dev version' pom.xml
+    git push
+    git push --tags
 
 contributing
 ------------
