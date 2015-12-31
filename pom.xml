@@ -20,8 +20,8 @@
     </developer>
   </developers>
   <scm>
-    <connection>scm:git:https://github.com/torquebox/rubygems-servlets.git</connection>
-    <developerConnection>scm:git:ssh://git@github.com:torquebox/rubygems-servlet.git</developerConnection>
+    <connection>scm:git:git://github.com/torquebox/rubygems-servlets.git</connection>
+    <developerConnection>scm:git:git@github.com:torquebox/rubygems-servlets.git</developerConnection>
     <url>https://github.com/torquebox/rubygems-servlets</url>
   </scm>
   <distributionManagement>
