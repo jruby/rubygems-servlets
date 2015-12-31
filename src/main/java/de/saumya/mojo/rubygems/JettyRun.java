@@ -37,7 +37,7 @@ public class JettyRun
         setProperty(props, "gem.hosted.storage", basedir + "/hosted");
         setProperty(props, "gem.caching.proxy.url", "https://rubygems.org");
         setProperty(props, "gem.proxy.url", "https://rubygems.org");
-    	JettyRunMain.main(props, args);
+    	JettyRunMain.main(props);
     }
     
     static private void setProperty( Properties props, String key, String defaultValue ) {
