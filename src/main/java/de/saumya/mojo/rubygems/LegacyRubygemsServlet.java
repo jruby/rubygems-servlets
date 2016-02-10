@@ -1,6 +1,9 @@
 package de.saumya.mojo.rubygems;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -34,7 +37,16 @@ public class LegacyRubygemsServlet extends RubygemsServlet
             // use a non https url here since IVY can not handle
             // redirects from https to http
             // https://github.com/torquebox/rubygems-servlets/issues/11
-            resp.sendRedirect( RUBYGEMS_S3_URL + ((GemArtifactFile) file ).gem( null ).filename() + ".gem" );
+            URL url = new URL("https://rubygems.org/gems/" + ((GemArtifactFile) file ).gem( null ).filename() + ".gem" );
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setRequestMethod("HEAD");
+            con.setInstanceFollowRedirects(false);
+            String location = con.getHeaderField("Location");
+            if (location == null) {
+                // use the old hardcoded storage as fallback
+                location = RUBYGEMS_S3_URL + ((GemArtifactFile) file ).gem( null ).filename() + ".gem";
+            }
+            resp.sendRedirect( location );
         }
         else
         {
