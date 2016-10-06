@@ -19,7 +19,7 @@ public class LegacyRubygemsServlet extends RubygemsServlet
 {
     private static final long serialVersionUID = 2441264980328145654L;
 
-    private static final String RUBYGEMS_S3_URL = "http://s3.amazonaws.com/production.s3.rubygems.org/gems/";
+    private static final String RUBYGEMS_DOWNLOAD_URL = "http://rubygems.org/gems/";
  
     @Override
     public void init() throws ServletException {
@@ -44,7 +44,7 @@ public class LegacyRubygemsServlet extends RubygemsServlet
             String location = con.getHeaderField("Location");
             if (location == null) {
                 // use the old hardcoded storage as fallback
-                location = RUBYGEMS_S3_URL + ((GemArtifactFile) file ).gem( null ).filename() + ".gem";
+                location = RUBYGEMS_DOWNLOAD_URL + ((GemArtifactFile) file ).gem( null ).filename() + ".gem";
             }
             resp.sendRedirect( location );
         }
