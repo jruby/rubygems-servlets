@@ -76,6 +76,28 @@ since some old gem-artifacts use the those repositories (old in sense they origi
 
 for more details about Gem-Artifacts see <https://github.com/sonatype/nexus-ruby-support/wiki/Gem-Artifacts>. for a solution with access control, more advanced proxy features and merging (group) to repositories see <https://github.com/sonatype/nexus-ruby-support>.
 
+
+hosted
+---
+
+the underlying library nexus-ruby-tools can handle `gem push my-1.0.0.gem` but somehow I have not deciphered how to use rubygems.org and a local repo without manually editing the config files.
+
+the easiest way is to use the `nexus` gem which was tailor made for the nexus-ruby-tools.
+
+
+```
+gem install nexus
+``
+
+then you can upload your gem with
+
+```
+gem nexus my-1.0.0.gem
+```
+
+it will prompt for the url which is http://localhost:8989/hosted from above. empty username and password will finally push the gem. since the username and passoword was empty it will be prompted again.
+
+
 non-caching proxy
 ---
 
