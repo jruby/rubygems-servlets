@@ -163,6 +163,13 @@ public class RubygemsServlet extends HttpServlet
     }
 
     @Override
+    protected void doPut( HttpServletRequest req, HttpServletResponse resp )
+            throws ServletException, IOException
+    {
+	doPost(req, resp);
+    }
+
+    @Override
     protected void doDelete( HttpServletRequest req, HttpServletResponse resp )
             throws ServletException, IOException
     {
